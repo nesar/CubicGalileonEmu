@@ -21,32 +21,32 @@ def plot_lines_with_param_color(param_array:np.array=None, # parameter array
                                ):
     
     
-    f = plt.figure(32, figsize=(10, 5))    
+    f, a = plt.subplots(1,1, figsize = (8, 5))  
 
     norm = mpl.colors.Normalize(vmin=param_array.min(), vmax=param_array.max())
     cmap = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.plasma)
     cmap.set_array([])
 
     for sim_index in range(50):
-        plt.plot(x_array, y_array_all[sim_index], 
+        a.plot(x_array, y_array_all[sim_index], 
                  '-', alpha= 0.5, c=cmap.to_rgba(param_array[sim_index]), 
                  label='Sim: '+str(sim_index) )
 
     # plt.plot(stellar_mass_test, gsmf_um_test, 'k.', label='UM z=0.00')
-    plt.xscale('log')
+    a.set_xscale('log')
     # plt.axhline(y=0, linestyle='dashed', color='black')
     # plt.yscale('log')
     # plt.xlim(4e9, )
     # plt.ylim(-0.02, 0.02)
 
-    clb = plt.colorbar(cmap)
+    clb = f.colorbar(cmap , ax=a)
 
     clb.ax.tick_params(labelsize=15) 
     clb.ax.set_title(param_name_str, fontsize=15)
 
     plt.title(title_str, fontsize=15)
-    plt.xlabel(xlabel_str, fontsize=15)
-    plt.ylabel(ylabel_str, fontsize=15)
+    a.set_xlabel(xlabel_str, fontsize=15)
+    a.set_ylabel(ylabel_str, fontsize=15)
     
     return f
 
