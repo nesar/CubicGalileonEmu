@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "CubicGalileonEmu"
+  site-url: "https://nesar.github.io/CubicGalileonEmu"
+  description: "GP emulator for boost factor in cubic Galileon gravity model"
+  repo-branch: main
+  repo-url: "https://github.com/nesar/CubicGalileonEmu"
