@@ -13,7 +13,7 @@ DATA_DIR = "data/"
 LIBRARY_ZK_FILE = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "z_k.txt").name
 LIBRARY_BK_FILE = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "Boost.npy").name
 LIBRARY_PARAM_FILE = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "cosmo_newdesign.txt").name
-PARAM_NAME = [r"$\Omega_m*h^2$", r"$n_s$", r"$\sigma_8$", r"$E_{ds}$", r"$f_\phi$"]
+PARAM_NAME = [r"$\Omega_m h^2$", r"$n_s$", r"$\sigma_8$", r"$E_{ds}$", r"$f_\phi$"]
 
 # %% ../nbs/00_load.ipynb 6
 def load_boost_training(Bk_fileIn:str=LIBRARY_BK_FILE, # Input file for Boost
