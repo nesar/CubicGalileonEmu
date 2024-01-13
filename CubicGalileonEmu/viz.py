@@ -27,7 +27,7 @@ def plot_lines_with_param_color(param_array:np.array=None, # parameter array
     cmap = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.plasma)
     cmap.set_array([])
 
-    for sim_index in range(50):
+    for sim_index in range(param_array.shape[0]):
         a.plot(x_array, y_array_all[sim_index], 
                  '-', alpha= 0.5, c=cmap.to_rgba(param_array[sim_index]), 
                  label='Sim: '+str(sim_index) )
