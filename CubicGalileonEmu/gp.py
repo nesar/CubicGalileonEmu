@@ -6,12 +6,6 @@ __all__ = ['MODEL_DIR', 'MODEL_FILE', 'MODEL_DIR_PATH', 'do_gp_train', 'gp_load'
 # %% ../nbs/02_gp.ipynb 3
 from sepia.SepiaModel import SepiaModel
 from sepia.SepiaData import SepiaData
-from sepia.SepiaPredict import SepiaEmulatorPrediction
-from sepia.SepiaPredict import SepiaFullPrediction
-from sepia.SepiaPredict import SepiaXvalEmulatorPrediction
-from sepia.SepiaSharedThetaModels import SepiaSharedThetaModels
-from PIL import Image
-import sepia.SepiaPlot as SepiaPlot
 import pkg_resources
 import os
 
@@ -24,6 +18,8 @@ MODEL_DIR_PATH = os.path.dirname(MODEL_FILE)
 def do_gp_train(sepia_model:SepiaModel=None, # Input data in SEPIA format, after PCA
                 model_file:str=MODEL_DIR_PATH + 'multivariate_model', #pickle file path
                ) -> SepiaModel: # sepia.SepiaModel.SepiaModel after GP
+    
+    ## Also check: https://github.com/lanl/SEPIA/blob/master/examples/Synthetic_toy_examples/multivariate_example_with_prediction.ipynb
     
     sepia_model.tune_step_sizes(50, 20, update_vals=True)
     sepia_model.do_mcmc(1000)

@@ -6,12 +6,6 @@ __all__ = ['do_pca']
 # %% ../nbs/01_pca.ipynb 3
 from sepia.SepiaModel import SepiaModel
 from sepia.SepiaData import SepiaData
-from sepia.SepiaPredict import SepiaEmulatorPrediction
-from sepia.SepiaPredict import SepiaFullPrediction
-from sepia.SepiaPredict import SepiaXvalEmulatorPrediction
-from sepia.SepiaSharedThetaModels import SepiaSharedThetaModels
-from PIL import Image
-import sepia.SepiaPlot as SepiaPlot
 
 # %% ../nbs/01_pca.ipynb 4
 def do_pca(sepia_data:SepiaData=None, # Input data in SEPIA format

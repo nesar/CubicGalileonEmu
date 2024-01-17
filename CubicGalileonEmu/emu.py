@@ -7,16 +7,14 @@ __all__ = ['emulate']
 from sepia.SepiaModel import SepiaModel
 from sepia.SepiaData import SepiaData
 from sepia.SepiaPredict import SepiaEmulatorPrediction
-from sepia.SepiaPredict import SepiaFullPrediction
-from sepia.SepiaPredict import SepiaXvalEmulatorPrediction
-from sepia.SepiaSharedThetaModels import SepiaSharedThetaModels
-from PIL import Image
-import sepia.SepiaPlot as SepiaPlot
+# from sepia.SepiaPredict import SepiaFullPrediction
+# from sepia.SepiaPredict import SepiaXvalEmulatorPrediction
+# from sepia.SepiaSharedThetaModels import SepiaSharedThetaModels
 import numpy as np
 
 # %% ../nbs/03_emu.ipynb 4
-def emulate(sepia_model, 
-        input_params,
+def emulate(sepia_model:SepiaModel=None, # Input data in SEPIA format
+        input_params:np.array=None, #Input parameter array 
        ) -> tuple: # 2 np.array of mean and (0.05,0.95) quantile in prediction
     
     if len(input_params.shape) == 1:
