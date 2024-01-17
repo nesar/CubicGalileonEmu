@@ -1,0 +1,20 @@
+name: Build CubicGalileonEmu with SEPIA dependency
+
+on:
+  push:
+    branches:
+      - main  # Change to the appropriate branch name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # You can choose a different OS if needed
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SEPIA
+      run: |
+        git clone https://github.com/lanl/SEPIA.git
+        cd SEPIA
+        pip install -e .[sepia]  # Install SEPIA package
