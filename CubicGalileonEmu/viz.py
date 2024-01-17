@@ -6,13 +6,13 @@ __all__ = ['plot_lines_with_param_color', 'plot_scatter_matrix', 'plot_train_dia
 # %% ../nbs/10_viz.ipynb 3
 import warnings
 warnings.simplefilter("ignore", UserWarning)
+import seaborn
 
 import numpy as np
 import os
 import matplotlib as mpl
 import matplotlib.pylab as plt
 import pandas as pd
-from PIL import Image
 import sepia.SepiaPlot as SepiaPlot
 from sepia.SepiaModel import SepiaModel
 from sepia.SepiaData import SepiaData
