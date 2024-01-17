@@ -17,4 +17,4 @@ jobs:
       run: |
         git clone https://github.com/lanl/SEPIA.git
         cd SEPIA
-        pip install -e .[sepia]  # Install xyz package
+        pip install -e .[sepia]  # Install SEPIA package

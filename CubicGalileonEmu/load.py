@@ -2,11 +2,12 @@
 
 # %% auto 0
 __all__ = ['DATA_DIR', 'LIBRARY_ZK_FILE', 'LIBRARY_BK_FILE', 'LIBRARY_PARAM_FILE', 'PARAM_NAME', 'load_boost_training',
-           'load_params']
+           'load_params', 'sepia_data_format']
 
 # %% ../nbs/00_load.ipynb 3
 import numpy as np
 import pkg_resources
+from sepia.SepiaData import SepiaData
 
 # %% ../nbs/00_load.ipynb 5
 DATA_DIR = "data/"
@@ -32,3 +33,11 @@ def load_params(p_fileIn:str=LIBRARY_PARAM_FILE, # Input file for parameters
                ) -> np.array: # Parameters
     p_all = np.loadtxt(p_fileIn)
     return p_all
+
+# %% ../nbs/00_load.ipynb 11
+def sepia_data_format(design:np.array=None, # Params array of shape (num_simulation, num_params)
+                     y_vals:np.array=None, # Shape (num_simulation, num_y_values)
+                     y_ind:np.array=None # Shape (num_y_values,)
+                     ) -> SepiaData: #Sepia data format
+    sepia_data = SepiaData(t_sim=design, y_sim=y_vals, y_ind_sim=y_ind)
+    return sepia_data
