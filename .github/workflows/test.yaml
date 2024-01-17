@@ -1,16 +1,23 @@
 name: CI
-on:  [workflow_dispatch, pull_request, push]
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps: [uses: fastai/workflows/nbdev-ci@master]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Use nbdev-ci action
+      uses: fastai/workflows/nbdev-ci@master
 
     - name: Install SEPIA
       run: |
         git clone https://github.com/lanl/SEPIA.git
         cd SEPIA
         pip install -e .[sepia]  # Install SEPIA package
-
-
 
