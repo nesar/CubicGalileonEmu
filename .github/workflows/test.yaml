@@ -5,3 +5,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps: [uses: fastai/workflows/nbdev-ci@master]
+
+    - name: Install SEPIA
+      run: |
+        git clone https://github.com/lanl/SEPIA.git
+        cd SEPIA
+        pip install -e .[sepia]  # Install SEPIA package
+
+
+
