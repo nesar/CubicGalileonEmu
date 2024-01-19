@@ -9,6 +9,7 @@ from sepia.SepiaData import SepiaData
 import pkg_resources
 import os
 
+
 # %% ../nbs/02_gp.ipynb 4
 MODEL_DIR = "model/"
 MODEL_FILE = pkg_resources.resource_stream("CubicGalileonEmu", MODEL_DIR + "README.txt").name
