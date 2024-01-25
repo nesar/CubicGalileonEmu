@@ -29,4 +29,5 @@ d = { 'settings': { 'branch': 'main',
                                                                                     'CubicGalileonEmu/viz.py'),
                                       'CubicGalileonEmu.viz.plot_train_diagnostics': ( 'viz.html#plot_train_diagnostics',
                                                                                        'CubicGalileonEmu/viz.py'),
-                                      'CubicGalileonEmu.viz.sensitivity_plot': ('viz.html#sensitivity_plot', 'CubicGalileonEmu/viz.py')}}}
+                                      'CubicGalileonEmu.viz.sensitivity_plot': ('viz.html#sensitivity_plot', 'CubicGalileonEmu/viz.py'),
+                                      'CubicGalileonEmu.viz.validation_plot': ('viz.html#validation_plot', 'CubicGalileonEmu/viz.py')}}}
