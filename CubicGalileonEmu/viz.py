@@ -199,7 +199,7 @@ def validation_plot(k_all, target_vals, pred_mean, pred_quant):
     a[0].set_ylabel('B(k)')
     a[0].set_xscale('log')
     # plt.show()
-    a[0].set_xlim(1e-2, 1e1)
+    a[0].set_xlim(2e-2, 1e1)
     a[0].set_ylim(0.83, 1.1)
     a[1].set_ylim(-0.012, 0.012)
     
