@@ -62,8 +62,8 @@ def plot_lines_with_param_color(param_array:np.array=None, # parameter array
     return f
 
 # %% ../nbs/10_viz.ipynb 5
-def plot_scatter_matrix(df, 
-                        colors
+def plot_scatter_matrix(df:pd.DataFrame=None, 
+                        colors:str=None,
                        ): 
     
     f, a = plt.subplots(1,1, figsize = (10, 10))
@@ -155,4 +155,6 @@ def sensitivity_plot(k_all, # all wavenumbers
             cbar.set_label(cbarlabel, fontsize=20)
 
     ax[paramNo].set_xlabel('k[h/Mpc]', fontsize=18)
-    plt.show()
+    # plt.show()
+    
+    return fig
