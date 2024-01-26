@@ -139,6 +139,9 @@ def sensitivity_plot(k_all, # all wavenumbers
                     ax[paramNo].set_xscale('log')
                     ax[paramNo].set_ylabel('B(k)', fontsize=18)
                     ax[paramNo].set_yticks([], minor = True)
+                    
+                    ax[paramNo].set_xlim(2e-2, 1e1)
+                    ax[paramNo].set_ylim(0.83, 1.1)
                             
             
             # Colorbar setup
@@ -153,9 +156,12 @@ def sensitivity_plot(k_all, # all wavenumbers
 
             cbarlabel = param_name[paramNo]
             cbar.set_label(cbarlabel, fontsize=20)
+            ax[paramNo].fill_between(k_all, 0.83, 1.1, where=(k_all > 1.2), color='k', alpha=0.15)
+
 
     ax[paramNo].set_xlabel('k[h/Mpc]', fontsize=18)
     # plt.show()
+
     
     return fig
 
