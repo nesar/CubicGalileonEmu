@@ -63,35 +63,48 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
  
 
 # %% ../nbs/03_emu.ipynb 6
-def emu_redshift(input_params_and_redshift):
+def emu_redshift(input_params_and_redshift:np.array=None, # Input parameters (along with redshift) 
+                 sepia_model_list:list=None,
+                 z_all:np.array=None): # All the trained models
+    
+    z = input_params_and_redshift[:, -1]
+    input_params = input_params_and_redshift[:, :-1]
+    
+    print(input_params.shape)
+    print(z)
     
     '''
-        if (z == 0):
-            # No redshift interpolation for z=0
-            GPm, PCAm = model_load(snap_ID=LAST_SNAP, nRankMax=DEFAULT_PCA_RANK)
-            Pk_interp = gp_emu(GPm, PCAm, [Omh2, ns, s8, fR0, n])
+    if (z == 0):
+        # No redshift interpolation for z=0
+        GPm, PCAm = model_load(snap_ID=LAST_SNAP, nRankMax=DEFAULT_PCA_RANK)
+        Pk_interp = emulate(sepia_model, input_params)
         
         
-        else:
-            # Linear interpolation between z1 < z < z2
-            snap_idx_nearest = (np.abs(z_all - z)).argmin()
-            if (z > z_all[snap_idx_nearest]):
-                snap_ID_z1 = snap_idx_nearest - 1
-            else:
-                snap_ID_z1 = snap_idx_nearest
-            snap_ID_z2 = snap_ID_z1 + 1
-
-            GPm1, PCAm1 = model_load(snap_ID=snap_ID_z1, nRankMax=DEFAULT_PCA_RANK)
-            Pk_z1 = gp_emu(GPm1, PCAm1, [Omh2, ns, s8, fR0, n])
-            z1 = z_all[snap_ID_z1]
-
-            GPm2, PCAm2 = model_load(snap_ID=snap_ID_z2, nRankMax=DEFAULT_PCA_RANK)
-            Pk_z2 = gp_emu(GPm2, PCAm2, [Omh2, ns, s8, fR0, n])
-            z2 = z_all[snap_ID_z2]
-
-            Pk_interp = np.zeros_like(Pk_z1)
-            Pk_interp = Pk_z2 + (Pk_z1 - Pk_z2)*(z - z2)/(z1 - z2)
-    return Pk_interp, kvals
-    
+    else:
     '''
-    pass
+    
+    # Linear interpolation between z1 < z < z2
+    snap_idx_nearest = (np.abs(z_all - z)).argmin()
+    if (z > z_all[snap_idx_nearest]):
+        snap_ID_z1 = snap_idx_nearest - 1
+    else:
+        snap_ID_z1 = snap_idx_nearest
+    snap_ID_z2 = snap_ID_z1 + 1
+    
+    print('SNAP ID: ', snap_ID_z1, snap_ID_z2)
+    print('IP: ', input_params.shape)
+    
+    
+    sepia_model_z1 = sepia_model_list[snap_ID_z1]
+    Bk_z1, _ = emulate(sepia_model_z1, input_params)
+    z1 = z_all[snap_ID_z1]
+    
+
+    sepia_model_z2 = sepia_model_list[snap_ID_z2]
+    Bk_z2, _ = emulate(sepia_model_z2, input_params)
+    z2 = z_all[snap_ID_z2]
+
+    Bk_interp = np.zeros_like(Bk_z1)
+    Bk_interp = Bk_z2 + (Bk_z1 - Bk_z2)*(z - z2)/(z1 - z2)
+    
+    return Bk_interp
