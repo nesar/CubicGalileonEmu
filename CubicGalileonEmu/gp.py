@@ -53,7 +53,7 @@ def gp_load_all():
 def do_gp_train_multiple(model_dir:str=None, # Pickle directory path
                          p_train_all:np.array=None, # Parameter array
                          y_vals_all:np.array=None, # Target y-values array
-                         y_ind_all:np.array=None, # Indices of the y-values
+                         y_ind_all:np.array=None, # x-values
                          z_index_range:np.array=None, # Snapshot indices for training
                    ) -> None: 
     
