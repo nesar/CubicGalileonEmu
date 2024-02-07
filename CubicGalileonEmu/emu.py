@@ -69,10 +69,7 @@ def emu_redshift(input_params_and_redshift:np.array=None, # Input parameters (al
     
     z = input_params_and_redshift[:, -1]
     input_params = input_params_and_redshift[:, :-1]
-    
-    print(input_params.shape)
-    print(z)
-    
+       
     '''
     if (z == 0):
         # No redshift interpolation for z=0
@@ -91,20 +88,20 @@ def emu_redshift(input_params_and_redshift:np.array=None, # Input parameters (al
         snap_ID_z1 = snap_idx_nearest
     snap_ID_z2 = snap_ID_z1 + 1
     
-    print('SNAP ID: ', snap_ID_z1, snap_ID_z2)
-    print('IP: ', input_params.shape)
-    
-    
+
     sepia_model_z1 = sepia_model_list[snap_ID_z1]
-    Bk_z1, _ = emulate(sepia_model_z1, input_params)
+    Bk_z1, Bk_z1_err = emulate(sepia_model_z1, input_params)
     z1 = z_all[snap_ID_z1]
     
 
     sepia_model_z2 = sepia_model_list[snap_ID_z2]
-    Bk_z2, _ = emulate(sepia_model_z2, input_params)
+    Bk_z2, Bk_z2_err = emulate(sepia_model_z2, input_params)
     z2 = z_all[snap_ID_z2]
 
     Bk_interp = np.zeros_like(Bk_z1)
     Bk_interp = Bk_z2 + (Bk_z1 - Bk_z2)*(z - z2)/(z1 - z2)
+
+    Bk_interp_err = np.zeros_like(Bk_z1_err)
+    Bk_interp_err = Bk_z2_err + (Bk_z1_err - Bk_z2_err)*(z - z2)/(z1 - z2)
     
-    return Bk_interp
+    return Bk_interp, Bk_interp_err
