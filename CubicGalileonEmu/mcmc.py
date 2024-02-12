@@ -9,45 +9,18 @@ import emcee
 import time
 from .emu import emu_redshift
 
-# %% ../nbs/04_mcmc.ipynb 4
-def ln_prior(theta, 
-             params_list
-             ):
-    
-    p1, p2, p3, p4, p5 = theta
-    param1, param2, param3, param4, param5 = params_list
-    
-    if param1[2] < p1 < param1[3]  \
-    and param2[2] < p2 < param2[3] \
-    and param3[2] < p3 < param3[3] \
-    and param4[2] < p4 < param4[3] \
-    and param5[2] < p5 < param5[3]:
-    
-        ### gaussian prior on a
-        p1_mu = 0.5*(param1[3] - param1[2]) + param1[2]
-        p2_mu = 0.5*(param2[3] - param2[2]) + param2[2]
-        p3_mu = 0.5*(param3[3] - param3[2]) + param3[2]
-        p4_mu = 0.5*(param4[3] - param4[2]) + param4[2]
-        p5_mu = 0.5*(param5[3] - param5[2]) + param5[2]
-
-        p1_sigma = 1*(param1[3] - p1_mu)
-        p2_sigma = 1*(param2[3] - p2_mu)
-        p3_sigma = 1*(param3[3] - p3_mu)
-        p4_sigma = 1*(param4[3] - p4_mu)
-        p5_sigma = 1*(param5[3] - p5_mu)
-        
-
-        pdf1 = np.log(1.0/(np.sqrt(2*np.pi)*p1_sigma))-0.5*(p1-p1_mu)**2/p1_sigma**2
-        pdf2 = np.log(1.0/(np.sqrt(2*np.pi)*p2_sigma))-0.5*(p2-p2_mu)**2/p2_sigma**2
-        pdf3 = np.log(1.0/(np.sqrt(2*np.pi)*p3_sigma))-0.5*(p3-p3_mu)**2/p3_sigma**2
-        pdf4 = np.log(1.0/(np.sqrt(2*np.pi)*p4_sigma))-0.5*(p4-p4_mu)**2/p4_sigma**2
-        pdf5 = np.log(1.0/(np.sqrt(2*np.pi)*p5_sigma))-0.5*(p5-p5_mu)**2/p5_sigma**2
-    
-        return pdf1 + pdf2 + pdf3 + pdf4 + pdf5
-
-    return -np.inf
-
 # %% ../nbs/04_mcmc.ipynb 5
+def ln_prior(theta, params_list):
+    pdf_sum = 0
+    for p, param in zip(theta, params_list):
+        if not (param[2] < p < param[3]):
+            return -np.inf
+        p_mu = 0.5 * (param[3] - param[2]) + param[2]
+        p_sigma = 1 * (param[3] - p_mu)
+        pdf_sum += np.log(1.0 / (np.sqrt(2 * np.pi) * p_sigma)) - 0.5 * (p - p_mu) ** 2 / p_sigma ** 2
+    return pdf_sum
+
+# %% ../nbs/04_mcmc.ipynb 6
 def ln_like(theta, 
             redshift,
             x_grid, 
@@ -58,10 +31,14 @@ def ln_like(theta,
             yerr
             ):
       
-    p1, p2, p3, p4, p5 = theta
+#     p1, p2, p3, p4, p5 = theta
+#     new_params = np.array([p1, p2, p3, p4, p5, redshift])[np.newaxis, :]
 
-    
-    new_params = np.array([p1, p2, p3, p4, p5, redshift])[np.newaxis, :]
+#     new_params = np.array(theta + [redshift])[np.newaxis, :]
+    new_params = np.append( np.array(theta), [redshift] )[np.newaxis, :]
+
+#     print('Theta', len(theta))
+#     print('New params', new_params.shape)
         
     model_grid, model_var_grid = emu_redshift(new_params, sepia_model_list, z_all)
         
@@ -74,7 +51,7 @@ def ln_like(theta,
     return ll
 
 
-# %% ../nbs/04_mcmc.ipynb 6
+# %% ../nbs/04_mcmc.ipynb 7
 def ln_prob(theta, 
             redshift,
             params_list, 
@@ -91,25 +68,12 @@ def ln_prob(theta,
         return -np.inf
     return lp + ln_like(theta, redshift, x_grid, sepia_model_list, z_all, x, y, yerr)
 
-# %% ../nbs/04_mcmc.ipynb 7
-def chain_init(params_list, 
-               ndim, 
-               nwalkers
-               ):
-
-    param1, param2, param3, param4, param5 = params_list
-
-    pos0 = [[param1[1]*1.0, 
-             param2[1]*1.0, 
-             param3[1]*1.0, 
-             param4[1]*1.0,
-             param5[1]*1.0] 
-            + 1e-3*np.random.randn(ndim) for i in range(nwalkers)]
-    
+# %% ../nbs/04_mcmc.ipynb 9
+def chain_init(params_list, ndim, nwalkers):
+    pos0 = [[param[1] * 1.0 for param in params_list] + 1e-3 * np.random.randn(ndim) for _ in range(nwalkers)]
     return pos0
 
-
-# %% ../nbs/04_mcmc.ipynb 8
+# %% ../nbs/04_mcmc.ipynb 10
 def define_sampler(redshift, 
                    ndim, 
                    nwalkers, 
@@ -125,7 +89,7 @@ def define_sampler(redshift,
     sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_prob, args=(redshift, params_list, x_grid, sepia_model_list, z_all, x, y, yerr))
     return sampler
 
-# %% ../nbs/04_mcmc.ipynb 9
+# %% ../nbs/04_mcmc.ipynb 11
 def do_mcmc(sampler, 
             pos, 
             nrun, 
@@ -134,25 +98,25 @@ def do_mcmc(sampler,
             ):
 
     time0 = time.time()
-    # burnin phase
     pos, prob, state = sampler.run_mcmc(pos, nrun)
 
     time1 = time.time()
-    print('burn-in time:', time1 - time0)
+    print('time (minutes):', (time1 - time0)/60. )
 
     samples = sampler.chain[:, :, :].reshape((-1, ndim))
 
     if if_burn: 
+        print('Burn-in phase')
         sampler.reset()
+
+    else:
+        print('Sampling phase')
 
     return pos, prob, state, samples, sampler
 
 
-# %% ../nbs/04_mcmc.ipynb 10
+# %% ../nbs/04_mcmc.ipynb 13
 def mcmc_results(samples):
-    p1_mcmc, p2_mcmc, p3_mcmc, p4_mcmc, p5_mcmc = map(lambda v: (v[1], v[2] - v[1], v[1] - v[0]), zip(*np.percentile(samples, [16, 50, 84], axis=0)))
-
-    print('mcmc results:', p1_mcmc[0], p2_mcmc[0], p3_mcmc[0], p4_mcmc[0], p5_mcmc[0])
-
-    return p1_mcmc[0], p2_mcmc[0], p3_mcmc[0], p4_mcmc[0], p5_mcmc[0]
-
+    results = list(map(lambda v: (v[1], v[2] - v[1], v[1] - v[0]), zip(*np.percentile(samples, [16, 50, 84], axis=0))))
+    print('mcmc results:', ' '.join(str(result[0]) for result in results))
+    return tuple(result[0] for result in results)
