@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="GP emulator for boost factor in cubic Galileon gravity model">
+
+<title>CubicGalileonEmu</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="CubicGalileonEmu">
+<meta property="og:description" content="GP emulator for boost factor in cubic Galileon gravity model">
+<meta property="og:site_name" content="CubicGalileonEmu">
+<meta name="twitter:title" content="CubicGalileonEmu">
+<meta name="twitter:description" content="GP emulator for boost factor in cubic Galileon gravity model">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">CubicGalileonEmu</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">CubicGalileonEmu</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">CubicGalileonEmu</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./load.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">load</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pca</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gp</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./emu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">emu</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mcmc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mcmc</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./viz.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">viz</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#install" id="toc-install" class="nav-link active" data-scroll-target="#install">Install</a></li>
+  <li><a href="#basic-rundown" id="toc-basic-rundown" class="nav-link" data-scroll-target="#basic-rundown">Basic rundown</a>
+  <ul class="collapse">
+  <li><a href="#a-few-imports" id="toc-a-few-imports" class="nav-link" data-scroll-target="#a-few-imports">A few imports</a></li>
+  <li><a href="#loading-files" id="toc-loading-files" class="nav-link" data-scroll-target="#loading-files">Loading files</a></li>
+  <li><a href="#a-few-plotting-routines" id="toc-a-few-plotting-routines" class="nav-link" data-scroll-target="#a-few-plotting-routines">A few plotting routines</a></li>
+  <li><a href="#training-involves-pca-gp-fitting." id="toc-training-involves-pca-gp-fitting." class="nav-link" data-scroll-target="#training-involves-pca-gp-fitting.">Training involves: PCA, GP fitting.</a></li>
+  <li><a href="#load-existing-model" id="toc-load-existing-model" class="nav-link" data-scroll-target="#load-existing-model">Load existing model</a></li>
+  <li><a href="#single-redshift-emulation-for-new-cosmological-parameters" id="toc-single-redshift-emulation-for-new-cosmological-parameters" class="nav-link" data-scroll-target="#single-redshift-emulation-for-new-cosmological-parameters">Single-redshift emulation for new cosmological parameters</a></li>
+  <li><a href="#sensitivity-analysis-from-the-emulator" id="toc-sensitivity-analysis-from-the-emulator" class="nav-link" data-scroll-target="#sensitivity-analysis-from-the-emulator">Sensitivity analysis from the emulator</a></li>
+  <li><a href="#multi-redshift-emulation" id="toc-multi-redshift-emulation" class="nav-link" data-scroll-target="#multi-redshift-emulation">Multi-redshift emulation</a></li>
+  <li><a href="#parameter-inference-via-mcmc-using-the-emulator" id="toc-parameter-inference-via-mcmc-using-the-emulator" class="nav-link" data-scroll-target="#parameter-inference-via-mcmc-using-the-emulator">Parameter inference via MCMC using the emulator</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/nesar/CubicGalileonEmu/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">CubicGalileonEmu</h1>
+</div>
+
+<div>
+  <div class="description">
+    GP emulator for boost factor in cubic Galileon gravity model
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>Modified Gravity emulator for boost in the dark matter power spectra</p>
+<section id="install" class="level2">
+<h2 class="anchored" data-anchor-id="install">Install</h2>
+<p>(not installable yet)</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install CubicGalileonEmu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="basic-rundown" class="level2">
+<h2 class="anchored" data-anchor-id="basic-rundown">Basic rundown</h2>
+<section id="a-few-imports" class="level3">
+<h3 class="anchored" data-anchor-id="a-few-imports">A few imports</h3>
+<div id="cell-7" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> CubicGalileonEmu.load <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> CubicGalileonEmu.viz <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> CubicGalileonEmu.pca <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> CubicGalileonEmu.gp <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> CubicGalileonEmu.emu <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> CubicGalileonEmu.mcmc <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pylab <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="loading-files" class="level3">
+<h3 class="anchored" data-anchor-id="loading-files">Loading files</h3>
+<div id="cell-9" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Bk_all, k_all, z_all <span class="op">=</span> load_boost_training()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>p_all <span class="op">=</span> load_params()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>exclude <span class="op">=</span> <span class="dv">35</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Bk_all <span class="op">=</span> np.delete(Bk_all, exclude, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>p_all <span class="op">=</span> np.delete(p_all, exclude, axis<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="a-few-plotting-routines" class="level3">
+<h3 class="anchored" data-anchor-id="a-few-plotting-routines">A few plotting routines</h3>
+<section id="experimental-design" class="level4">
+<h4 class="anchored" data-anchor-id="experimental-design">Experimental design</h4>
+<div id="cell-11" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_train_a <span class="op">=</span> pd.DataFrame(p_all, columns<span class="op">=</span>PARAM_NAME)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">'b'</span>]<span class="op">*</span>p_all.shape[<span class="dv">0</span>]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># colors = ['b']*num_sims + ['r']*num_sims_test</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>plot_scatter_matrix(df_train_a, colors)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="boost-metrics-colored-by-cosmology-parameters" class="level4">
+<h4 class="anchored" data-anchor-id="boost-metrics-colored-by-cosmology-parameters">Boost metrics colored by cosmology parameters</h4>
+<div id="cell-13" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>color_by_index <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>z_index <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plot_lines_with_param_color(p_all[:, color_by_index], </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                            k_all, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                            Bk_all[:, z_index, :], </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                            <span class="st">'Training data, z='</span> <span class="op">+</span> <span class="bu">str</span>(z_all[z_index]), </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                            <span class="vs">r'$k [h/Mpc]$'</span>, </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                            <span class="vs">r'$B(k)$'</span>, </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                            PARAM_NAME[color_by_index])<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-14" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>color_by_index <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>z_index <span class="op">=</span> <span class="dv">21</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>plot_lines_with_param_color(p_all[:, color_by_index], </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                            k_all, </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                            Bk_all[:, z_index, :], </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                            <span class="st">'Training data, z='</span> <span class="op">+</span> <span class="bu">str</span>(z_all[z_index]), </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                            <span class="vs">r'$k [h/Mpc]$'</span>, </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                            <span class="vs">r'$B(k)$'</span>, </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                            PARAM_NAME[color_by_index])<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="training-involves-pca-gp-fitting." class="level3">
+<h3 class="anchored" data-anchor-id="training-involves-pca-gp-fitting.">Training involves: PCA, GP fitting.</h3>
+<div id="cell-16" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Data prep</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>z_index <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>y_vals <span class="op">=</span> Bk_all[:, z_index, :]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># y_ind = np.arange(0, y_vals.shape[1])</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>y_ind <span class="op">=</span> k_all</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Train-test split</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>test_indices <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">14</span>, <span class="dv">35</span>]</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>input_params<span class="op">=</span> p_all[test_indices]</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>target_vals <span class="op">=</span> Bk_all[:, z_index, :][test_indices]</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>train_indices <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span>  np.arange(<span class="dv">49</span>) <span class="cf">if</span> i <span class="kw">not</span> <span class="kw">in</span> test_indices] </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>p_all_train <span class="op">=</span> p_all[train_indices]</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>y_vals_train <span class="op">=</span> Bk_all[:, z_index, :][train_indices]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-17" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sepia_data <span class="op">=</span> sepia_data_format(p_all_train, y_vals_train, y_ind)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sepia_data)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>model_filename <span class="op">=</span> <span class="st">'../CubicGalileonEmu/model/multivariate_model_z_index'</span> <span class="op">+</span> <span class="bu">str</span>(z_index) </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>sepia_model <span class="op">=</span> do_pca(sepia_data, exp_variance<span class="op">=</span><span class="fl">0.95</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>sepia_model <span class="op">=</span> do_gp_train(sepia_model, model_filename)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    46 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+Starting tune_step_sizes...
+Default step sizes:
+betaU
+[[0.1 0.1]
+ [0.1 0.1]
+ [0.1 0.1]
+ [0.1 0.1]
+ [0.1 0.1]
+ [0.1 0.1]]
+lamUz
+[[5. 5.]]
+lamWs
+[[100. 100.]]
+lamWOs
+[[100.]]
+Done with tune_step_size.
+Selected step sizes:
+betaU
+[[0.69939481 0.25916416]
+ [0.73580093 0.50984047]
+ [0.10641831 0.05393297]
+ [0.20991299 0.18908626]
+ [0.94748741 0.10984598]
+ [0.05176962 0.2190375 ]]
+lamUz
+[[0.62160791 0.73180062]]
+lamWs
+[[4681.97010197 4956.69449683]]
+lamWOs
+[[4.55542531]]
+Model saved to ../CubicGalileonEmu/model/multivariate_model_z_index1.pkl</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Step size tuning:   0%|          | 0/50 [00:00&lt;?, ?it/s]Step size tuning: 100%|██████████| 50/50 [00:06&lt;00:00,  7.37it/s]
+MCMC sampling: 100%|██████████| 1000/1000 [00:06&lt;00:00, 152.43it/s]</code></pre>
+</div>
+</div>
+</section>
+<section id="load-existing-model" class="level3">
+<h3 class="anchored" data-anchor-id="load-existing-model">Load existing model</h3>
+<div id="cell-19" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sepia_model <span class="op">=</span> gp_load(sepia_model, model_filename)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.</code></pre>
+</div>
+</div>
+<div id="cell-20" class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>plot_train_diagnostics(sepia_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No thetas to plot</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-10-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="single-redshift-emulation-for-new-cosmological-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="single-redshift-emulation-for-new-cosmological-parameters">Single-redshift emulation for new cosmological parameters</h3>
+<div id="cell-22" class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pred_mean, pred_quant <span class="op">=</span> emulate(sepia_model, input_params)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>validation_plot(k_all, target_vals, pred_mean, pred_quant)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="sensitivity-analysis-from-the-emulator" class="level3">
+<h3 class="anchored" data-anchor-id="sensitivity-analysis-from-the-emulator">Sensitivity analysis from the emulator</h3>
+<div id="cell-25" class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> sensitivity_plot(k_all, p_all, sepia_model, emulate, PARAM_NAME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="multi-redshift-emulation" class="level3">
+<h3 class="anchored" data-anchor-id="multi-redshift-emulation">Multi-redshift emulation</h3>
+<section id="train-all-the-models" class="level4">
+<h4 class="anchored" data-anchor-id="train-all-the-models">Train all the models</h4>
+<div id="cell-28" class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>do_gp_train_multiple(model_dir<span class="op">=</span><span class="st">'../CubicGalileonEmu/model/'</span>, </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                     p_train_all <span class="op">=</span> p_all[train_indices],</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                     y_vals_all <span class="op">=</span> Bk_all[train_indices],</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                     y_ind_all <span class="op">=</span> k_all,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                     z_index_range<span class="op">=</span>np.arange(<span class="dv">50</span>, <span class="dv">51</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Starting tune_step_sizes...
+Default step sizes:
+betaU
+[[0.1 0.1]
+ [0.1 0.1]
+ [0.1 0.1]
+ [0.1 0.1]
+ [0.1 0.1]
+ [0.1 0.1]]
+lamUz
+[[5. 5.]]
+lamWs
+[[100. 100.]]
+lamWOs
+[[100.]]
+Done with tune_step_size.
+Selected step sizes:
+betaU
+[[0.8181955  0.785562  ]
+ [0.50810196 0.30986204]
+ [0.05131889 0.09772101]
+ [0.10465496 0.4583368 ]
+ [0.80275269 1.01153757]
+ [0.07433058 0.15343897]]
+lamUz
+[[0.80980682 0.68060687]]
+lamWs
+[[4792.19258679  951.73819855]]
+lamWOs
+[[0.10817436]]
+Model saved to ../CubicGalileonEmu/model/multivariate_model_z_index50.pkl
+Training complete for snapshot 50
+Model saved at ../CubicGalileonEmu/model/
+=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Step size tuning:   0%|          | 0/50 [00:00&lt;?, ?it/s]Step size tuning: 100%|██████████| 50/50 [00:06&lt;00:00,  7.38it/s]
+MCMC sampling: 100%|██████████| 1000/1000 [00:06&lt;00:00, 152.58it/s]</code></pre>
+</div>
+</div>
+<div id="cell-29" class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sepia_model_list <span class="op">=</span> load_model_multiple(model_dir<span class="op">=</span><span class="st">'../CubicGalileonEmu/model/'</span>, </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                                       p_train_all<span class="op">=</span>p_all,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                                       y_vals_all<span class="op">=</span>Bk_all,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                                       y_ind_all<span class="op">=</span>y_ind,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                                       z_index_range<span class="op">=</span><span class="bu">range</span>(<span class="dv">51</span>), </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                                       sepia_model_i<span class="op">=</span>sepia_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+This SepiaData instance implies the following:
+This is a simulator (eta)-only model, y dimension 768
+m  =    49 (number of simulated data)
+p  =     1 (number of inputs)
+q  =     5 (number of additional simulation inputs)
+pu NOT SET (transformed response dimension); call method create_K_basis 
+
+WARNING: make sure this model was instantiated with the same input data as the model corresonding to this saved model info.
+Number of models loaded: 51</code></pre>
+</div>
+</div>
+<div id="cell-30" class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>input_params0 <span class="op">=</span> input_params[<span class="dv">0</span>]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>z_inputs <span class="op">=</span> <span class="fl">0.1234</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>input_params_and_redshift <span class="op">=</span> np.append(input_params0, z_inputs)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(input_params_and_redshift[np.newaxis, :])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.139      1.085      0.8184     0.88136007 0.4694     0.1234    ]]</code></pre>
+</div>
+</div>
+<div id="cell-31" class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>emulated_with_redshift, emulated_with_redshift_err <span class="op">=</span> emu_redshift(input_params_and_redshift[np.newaxis, :], sepia_model_list, z_all)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-32" class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>plt.plot(k_all, emulated_with_redshift[:, <span class="dv">0</span>], label<span class="op">=</span><span class="st">'Z-interp'</span>, lw<span class="op">=</span><span class="dv">5</span>, ls<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>plt.plot(k_all, emulate(sepia_model_list[<span class="dv">2</span>], input_params_and_redshift[:<span class="op">-</span><span class="dv">1</span>])[<span class="dv">0</span>], label<span class="op">=</span><span class="st">'Z1'</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>plt.plot(k_all, emulate(sepia_model_list[<span class="dv">3</span>], input_params_and_redshift[:<span class="op">-</span><span class="dv">1</span>])[<span class="dv">0</span>], label<span class="op">=</span><span class="st">'Z2'</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Comparison of redshift-space interpolation'</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.plot(k_all, emulate(sepia_model_list[0], input_params))</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.plot(k_all, emulate(sepia_model_list[0], input_params))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Text(0.5, 1.0, 'Comparison of redshift-space interpolation')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-18-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="parameter-inference-via-mcmc-using-the-emulator" class="level3">
+<h3 class="anchored" data-anchor-id="parameter-inference-via-mcmc-using-the-emulator">Parameter inference via MCMC using the emulator</h3>
+<div id="cell-34" class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ndim <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>nwalkers <span class="op">=</span> <span class="dv">100</span>  <span class="co"># 500</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>nrun_burn <span class="op">=</span> <span class="dv">50</span>  <span class="co"># 300</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>nrun <span class="op">=</span> <span class="dv">700</span>  <span class="co"># 700</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="creating-mock-observational-data" class="level4">
+<h4 class="anchored" data-anchor-id="creating-mock-observational-data">Creating mock observational data</h4>
+<div id="cell-36" class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>target_indx <span class="op">=</span> <span class="dv">0</span> <span class="co">#0 ,14, 35</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>z_index <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> <span class="dv">32</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>fake_obs_data_index_every <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>redshift <span class="op">=</span> <span class="fl">0.01</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> k_all[::fake_obs_data_index_every]</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> Bk_all[:, z_index, :][target_indx][::fake_obs_data_index_every]</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> y <span class="op">+</span> <span class="fl">1e-3</span><span class="op">*</span>np.random.normal(<span class="fl">0.0</span>, <span class="fl">1.0</span>, size<span class="op">=</span>y.shape)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>yerr <span class="op">=</span> np.sqrt( Bk_all[:, z_index, :][target_indx][::fake_obs_data_index_every]<span class="op">*</span>(L<span class="op">**</span><span class="dv">3</span>))<span class="op">/</span>(L<span class="op">**</span><span class="dv">3</span>)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>x_grid <span class="op">=</span> k_all</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>params_calib <span class="op">=</span> p_all[target_indx][:, np.newaxis].T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-37" class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>f, a <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>, figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">5</span>)) </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>input_params_and_redshift <span class="op">=</span> np.append(params_calib, redshift)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>bk_target, err_target <span class="op">=</span> emu_redshift(input_params_and_redshift[np.newaxis, :], sepia_model_list, z_all)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>a.plot(k_all, bk_target[:, <span class="dv">0</span>], label<span class="op">=</span><span class="st">'Emulated at target params'</span>, lw<span class="op">=</span><span class="dv">5</span>, ls<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>a.errorbar(x, y, yerr, label<span class="op">=</span><span class="st">'Target mock observations'</span>, ls<span class="op">=</span><span class="st">'none'</span>, lw<span class="op">=</span><span class="dv">1</span>, color <span class="op">=</span> <span class="st">"r"</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>a.scatter(x, y, s <span class="op">=</span> <span class="dv">5</span>, marker <span class="op">=</span> <span class="st">"h"</span>, color <span class="op">=</span> <span class="st">"r"</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>a.set_xscale(<span class="st">'log'</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'pre-MCMC'</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>a.set_xlabel(<span class="vs">r'$k [h/Mpc]$'</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>a.set_ylabel(<span class="vs">r'$B(k)$'</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>plt.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-21-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-38" class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>allMax <span class="op">=</span> np.<span class="bu">max</span>(p_all, axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>allMin <span class="op">=</span> np.<span class="bu">min</span>(p_all, axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>param1 <span class="op">=</span> [PARAM_NAME[<span class="dv">0</span>], params_calib[<span class="dv">0</span>][<span class="dv">0</span>], allMin[<span class="dv">0</span>], allMax[<span class="dv">0</span>]] </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>param2 <span class="op">=</span> [PARAM_NAME[<span class="dv">1</span>], params_calib[<span class="dv">0</span>][<span class="dv">1</span>], allMin[<span class="dv">1</span>], allMax[<span class="dv">1</span>]]</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>param3 <span class="op">=</span> [PARAM_NAME[<span class="dv">2</span>], params_calib[<span class="dv">0</span>][<span class="dv">2</span>], allMin[<span class="dv">2</span>], allMax[<span class="dv">2</span>]]</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>param4 <span class="op">=</span> [PARAM_NAME[<span class="dv">3</span>], params_calib[<span class="dv">0</span>][<span class="dv">3</span>], allMin[<span class="dv">3</span>], allMax[<span class="dv">2</span>]]</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>param5 <span class="op">=</span> [PARAM_NAME[<span class="dv">4</span>], params_calib[<span class="dv">0</span>][<span class="dv">4</span>], allMin[<span class="dv">4</span>], allMax[<span class="dv">4</span>]]</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>params_list <span class="op">=</span> [param1, param2, param3, param4, param5]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-39" class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>pos0 <span class="op">=</span> chain_init(params_list, ndim, nwalkers)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sampler <span class="op">=</span> define_sampler(redshift, ndim, nwalkers, params_list, x_grid, sepia_model_list, z_all, x, y, yerr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-40" class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>np.append(np.array(pos0[<span class="dv">0</span>]), [<span class="fl">1.000</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([0.13828145, 1.08663491, 0.81760626, 0.88101574, 0.47104757,
+       1.        ])</code></pre>
+</div>
+</div>
+<div id="cell-41" class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>p2 <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>p3 <span class="op">=</span> <span class="fl">0.4</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>p4 <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>p5 <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>redshift <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> [p1, p2, p3, p4, p5]</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>new_params <span class="op">=</span> np.array(theta <span class="op">+</span> [redshift])[np.newaxis, :]</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(new_params)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>model_grid, model_var_grid <span class="op">=</span> emu_redshift(new_params, sepia_model_list, z_all)</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model_grid.<span class="bu">max</span>(), model_var_grid.<span class="bu">max</span>())</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>new_params <span class="op">=</span> np.array([p1, p2, p3, p4, p5, redshift])[np.newaxis, :]</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(new_params)</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>model_grid, model_var_grid <span class="op">=</span> emu_redshift(new_params, sepia_model_list, z_all)</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model_grid.<span class="bu">max</span>(), model_var_grid.<span class="bu">max</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.2 0.3 0.4 0.3 0.2 0.3]]
+1.0085819247347572 1.0086969674676909
+[[0.2 0.3 0.4 0.3 0.2 0.3]]
+1.0085272674443067 1.0086382559036546</code></pre>
+</div>
+</div>
+<div id="cell-42" class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model_grid, model_var_grid = emu_redshift(new_params, sepia_model_list, z_all)</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># print(model_grid.max(), model_var_grid.max())</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-43" class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ln_like(theta, redshift, x_grid, sepia_model_list, z_all, x, y, yerr))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ln_like(theta, redshift, x_grid, sepia_model_list, z_all, x, y, yerr))</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ln_like(theta, redshift, x_grid, sepia_model_list, z_all, x, y, yerr))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-0.007277789732769892
+-0.005978218042074299
+-0.005678975186025005</code></pre>
+</div>
+</div>
+<div id="cell-44" class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>do_mcmc(sampler, pos0, <span class="dv">10</span>, ndim, if_burn<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>ValueError: negative dimensions are not allowed</code></pre>
+</div>
+</div>
+<div id="cell-45" class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>pos, prob, state, samples, sampler <span class="op">=</span> do_mcmc(sampler, pos0, nrun_burn, ndim, if_burn<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>pos, prob, state, samples, sampler <span class="op">=</span> do_mcmc(sampler, pos, nrun, ndim, if_burn<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>p_mcmc <span class="op">=</span> mcmc_results(samples)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>emcee: Exception while calling your likelihood function:
+  params: [0.12270278 1.09487954 0.82975626 0.88508475 0.48131031]
+  args: (0.01, [['$\\Omega_m h^2$', 0.139, 0.12, 0.15], ['$n_s$', 1.085, 0.85, 1.1], ['$\\sigma_8$', 0.8184, 0.7, 0.9], ['$E_{ds}$', 0.881360068134854, 0.8292872507980129, 0.9], ['$f_\\phi$', 0.4694, 0.02041, 1.0]], array([ 0.020046,  0.035041,  0.049231,  0.063783,  0.080073,  0.096163,
+        0.111083,  0.126058,  0.142273,  0.158546,  0.17375 ,  0.188953,
+        0.204907,  0.220756,  0.23588 ,  0.2514  ,  0.267535,  0.283568,
+        0.299022,  0.314451,  0.330372,  0.346141,  0.361624,  0.377134,
+        0.392932,  0.408854,  0.424564,  0.440253,  0.455999,  0.471626,
+        0.48727 ,  0.502856,  0.518488,  0.534347,  0.550082,  0.565732,
+        0.581496,  0.597222,  0.612804,  0.628434,  0.644267,  0.660051,
+        0.675724,  0.691403,  0.707174,  0.722871,  0.73838 ,  0.754018,
+        0.769845,  0.78569 ,  0.801365,  0.817031,  0.832809,  0.848511,
+        0.864097,  0.879701,  0.895507,  0.911279,  0.92691 ,  0.942635,
+        0.958396,  0.974128,  0.989692,  1.00528 ,  1.02113 ,  1.03692 ,
+        1.05264 ,  1.06832 ,  1.08405 ,  1.09979 ,  1.11537 ,  1.13105 ,
+        1.14679 ,  1.16256 ,  1.17828 ,  1.19395 ,  1.2097  ,  1.22537 ,
+        1.241   ,  1.25666 ,  1.27241 ,  1.28819 ,  1.30392 ,  1.31957 ,
+        1.33529 ,  1.35108 ,  1.36674 ,  1.3824  ,  1.39811 ,  1.41389 ,
+        1.42964 ,  1.44531 ,  1.46101 ,  1.47667 ,  1.49229 ,  1.50793 ,
+        1.52367 ,  1.53953 ,  1.55526 ,  1.57092 ,  1.58662 ,  1.60235 ,
+        1.61809 ,  1.63369 ,  1.64941 ,  1.66519 ,  1.68085 ,  1.69652 ,
+        1.71228 ,  1.72806 ,  1.74368 ,  1.75933 ,  1.77505 ,  1.79081 ,
+        1.8065  ,  1.82218 ,  1.83797 ,  1.85367 ,  1.86928 ,  1.88497 ,
+        1.90073 ,  1.91647 ,  1.93218 ,  1.94787 ,  1.96363 ,  1.97935 ,
+        1.99499 ,  2.01064 ,  2.0264  ,  2.04216 ,  2.05781 ,  2.07353 ,
+        2.08928 ,  2.10499 ,  2.12065 ,  2.13633 ,  2.15211 ,  2.16785 ,
+        2.18349 ,  2.19916 ,  2.21489 ,  2.23063 ,  2.2463  ,  2.26194 ,
+        2.27765 ,  2.29341 ,  2.30914 ,  2.32486 ,  2.34061 ,  2.35635 ,
+        2.37203 ,  2.38768 ,  2.40339 ,  2.41914 ,  2.43483 ,  2.4505  ,
+        2.46622 ,  2.48195 ,  2.49759 ,  2.51328 ,  2.52906 ,  2.54479 ,
+        2.56049 ,  2.57618 ,  2.59189 ,  2.60758 ,  2.62325 ,  2.63898 ,
+        2.65468 ,  2.67044 ,  2.68618 ,  2.70184 ,  2.71755 ,  2.73329 ,
+        2.74897 ,  2.76462 ,  2.78034 ,  2.79607 ,  2.81179 ,  2.82749 ,
+        2.84321 ,  2.85893 ,  2.87462 ,  2.89033 ,  2.90605 ,  2.92176 ,
+        2.93747 ,  2.95318 ,  2.96891 ,  2.98456 ,  3.00023 ,  3.01596 ,
+        3.03164 ,  3.04738 ,  3.0631  ,  3.07883 ,  3.09456 ,  3.11026 ,
+        3.12596 ,  3.14163 ,  3.15734 ,  3.17308 ,  3.18879 ,  3.20447 ,
+        3.2202  ,  3.2359  ,  3.25157 ,  3.26729 ,  3.28304 ,  3.29877 ,
+        3.31446 ,  3.33014 ,  3.34585 ,  3.36158 ,  3.37727 ,  3.39294 ,
+        3.40867 ,  3.42439 ,  3.44008 ,  3.45578 ,  3.47153 ,  3.48724 ,
+        3.50292 ,  3.51859 ,  3.53431 ,  3.55007 ,  3.56577 ,  3.58146 ,
+        3.59719 ,  3.61292 ,  3.62859 ,  3.64429 ,  3.66003 ,  3.67578 ,
+        3.69146 ,  3.70712 ,  3.72284 ,  3.73853 ,  3.75422 ,  3.76993 ,
+        3.78564 ,  3.80137 ,  3.81707 ,  3.83279 ,  3.84853 ,  3.86424 ,
+        3.87992 ,  3.89561 ,  3.91134 ,  3.92704 ,  3.94273 ,  3.95845 ,
+        3.97418 ,  3.98988 ,  4.00554 ,  4.02125 ,  4.03698 ,  4.05268 ,
+        4.06839 ,  4.0841  ,  4.09983 ,  4.11555 ,  4.13124 ,  4.14693 ,
+        4.16266 ,  4.17839 ,  4.19408 ,  4.20977 ,  4.22551 ,  4.24123 ,
+        4.25691 ,  4.27259 ,  4.28831 ,  4.30404 ,  4.31974 ,  4.33543 ,
+        4.35116 ,  4.36688 ,  4.38255 ,  4.39825 ,  4.41398 ,  4.4297  ,
+        4.44541 ,  4.46111 ,  4.47683 ,  4.49251 ,  4.50819 ,  4.5239  ,
+        4.53962 ,  4.55535 ,  4.57106 ,  4.58678 ,  4.6025  ,  4.61821 ,
+        4.63391 ,  4.6496  ,  4.66532 ,  4.68103 ,  4.69673 ,  4.71241 ,
+        4.72811 ,  4.74384 ,  4.75955 ,  4.77525 ,  4.79096 ,  4.80669 ,
+        4.8224  ,  4.83809 ,  4.85379 ,  4.8695  ,  4.88521 ,  4.90093 ,
+        4.91663 ,  4.93234 ,  4.94807 ,  4.96377 ,  4.97943 ,  4.99514 ,
+        5.01086 ,  5.02654 ,  5.04227 ,  5.058   ,  5.07371 ,  5.08942 ,
+        5.10513 ,  5.12084 ,  5.13656 ,  5.15225 ,  5.16796 ,  5.18369 ,
+        5.1994  ,  5.21509 ,  5.23079 ,  5.24649 ,  5.26217 ,  5.27788 ,
+        5.29359 ,  5.30933 ,  5.32504 ,  5.34073 ,  5.35646 ,  5.37218 ,
+        5.38789 ,  5.40357 ,  5.41929 ,  5.43502 ,  5.4507  ,  5.46639 ,
+        5.48212 ,  5.49786 ,  5.51353 ,  5.52921 ,  5.54495 ,  5.56066 ,
+        5.57637 ,  5.59207 ,  5.60778 ,  5.62346 ,  5.63916 ,  5.65487 ,
+        5.6706  ,  5.68633 ,  5.70203 ,  5.71773 ,  5.73344 ,  5.74916 ,
+        5.76486 ,  5.78054 ,  5.79626 ,  5.812   ,  5.8277  ,  5.84339 ,
+        5.85911 ,  5.87484 ,  5.89053 ,  5.90623 ,  5.92195 ,  5.93767 ,
+        5.95336 ,  5.96905 ,  5.98476 ,  6.00048 ,  6.01617 ,  6.03185 ,
+        6.04756 ,  6.06331 ,  6.07903 ,  6.09473 ,  6.11044 ,  6.12616 ,
+        6.14186 ,  6.15755 ,  6.17326 ,  6.18898 ,  6.20467 ,  6.22036 ,
+        6.2361  ,  6.2518  ,  6.26748 ,  6.28319 ,  6.29893 ,  6.31463 ,
+        6.33033 ,  6.34604 ,  6.36177 ,  6.37747 ,  6.39316 ,  6.40888 ,
+        6.4246  ,  6.44031 ,  6.45601 ,  6.47172 ,  6.48744 ,  6.50313 ,
+        6.51882 ,  6.53452 ,  6.55025 ,  6.56597 ,  6.58166 ,  6.59736 ,
+        6.61307 ,  6.6288  ,  6.6445  ,  6.6602  ,  6.67592 ,  6.69164 ,
+        6.70735 ,  6.72304 ,  6.73874 ,  6.75446 ,  6.77016 ,  6.78585 ,
+        6.80156 ,  6.81729 ,  6.83301 ,  6.8487  ,  6.8644  ,  6.88012 ,
+        6.89583 ,  6.91151 ,  6.92723 ,  6.94296 ,  6.95866 ,  6.97436 ,
+        6.99007 ,  7.00578 ,  7.02147 ,  7.03718 ,  7.0529  ,  7.06863 ,
+        7.08433 ,  7.10004 ,  7.11575 ,  7.13145 ,  7.14715 ,  7.16284 ,
+        7.17855 ,  7.19428 ,  7.20998 ,  7.22568 ,  7.24139 ,  7.25711 ,
+        7.27282 ,  7.28852 ,  7.30423 ,  7.31995 ,  7.33565 ,  7.35135 ,
+        7.36706 ,  7.38277 ,  7.39847 ,  7.41419 ,  7.4299  ,  7.44561 ,
+        7.46132 ,  7.47701 ,  7.49272 ,  7.50842 ,  7.5241  ,  7.53981 ,
+        7.55552 ,  7.57125 ,  7.58698 ,  7.60268 ,  7.6184  ,  7.63411 ,
+        7.64981 ,  7.66552 ,  7.68123 ,  7.69695 ,  7.71264 ,  7.72834 ,
+        7.74407 ,  7.75978 ,  7.77546 ,  7.79116 ,  7.8069  ,  7.8226  ,
+        7.83828 ,  7.85399 ,  7.86972 ,  7.88543 ,  7.90111 ,  7.91681 ,
+        7.93255 ,  7.94828 ,  7.96397 ,  7.97967 ,  7.99538 ,  8.0111  ,
+        8.0268  ,  8.04248 ,  8.0582  ,  8.07393 ,  8.08963 ,  8.10533 ,
+        8.12104 ,  8.13675 ,  8.15245 ,  8.16815 ,  8.18387 ,  8.19959 ,
+        8.2153  ,  8.23101 ,  8.24672 ,  8.26241 ,  8.2781  ,  8.29381 ,
+        8.30952 ,  8.32524 ,  8.34095 ,  8.35666 ,  8.37237 ,  8.38808 ,
+        8.40379 ,  8.4195  ,  8.4352  ,  8.45091 ,  8.46662 ,  8.48232 ,
+        8.49802 ,  8.51374 ,  8.52945 ,  8.54515 ,  8.56086 ,  8.57658 ,
+        8.59228 ,  8.60799 ,  8.62371 ,  8.63942 ,  8.65512 ,  8.67082 ,
+        8.68653 ,  8.70224 ,  8.71795 ,  8.73365 ,  8.74936 ,  8.76506 ,
+        8.78076 ,  8.79646 ,  8.81218 ,  8.82791 ,  8.8436  ,  8.8593  ,
+        8.87503 ,  8.89076 ,  8.90644 ,  8.92214 ,  8.93786 ,  8.95357 ,
+        8.96928 ,  8.98498 ,  9.00069 ,  9.01639 ,  9.03208 ,  9.04778 ,
+        9.06351 ,  9.07923 ,  9.09493 ,  9.11062 ,  9.12635 ,  9.14207 ,
+        9.15777 ,  9.17346 ,  9.18917 ,  9.2049  ,  9.22061 ,  9.23631 ,
+        9.25201 ,  9.26773 ,  9.28343 ,  9.29913 ,  9.31484 ,  9.33057 ,
+        9.34627 ,  9.36197 ,  9.37768 ,  9.39338 ,  9.40909 ,  9.42479 ,
+        9.4405  ,  9.45621 ,  9.47193 ,  9.48763 ,  9.50334 ,  9.51906 ,
+        9.53476 ,  9.55045 ,  9.56616 ,  9.58188 ,  9.59759 ,  9.6133  ,
+        9.62901 ,  9.64471 ,  9.66041 ,  9.67612 ,  9.69184 ,  9.70754 ,
+        9.72324 ,  9.73895 ,  9.75467 ,  9.77038 ,  9.78607 ,  9.80177 ,
+        9.81749 ,  9.8332  ,  9.8489  ,  9.86463 ,  9.88035 ,  9.89606 ,
+        9.91175 ,  9.92745 ,  9.94317 ,  9.95888 ,  9.97458 ,  9.99029 ,
+       10.006   , 10.0217  , 10.0374  , 10.0531  , 10.0688  , 10.0845  ,
+       10.1002  , 10.1159  , 10.1317  , 10.1474  , 10.1631  , 10.1788  ,
+       10.1945  , 10.2102  , 10.2259  , 10.2416  , 10.2573  , 10.273   ,
+       10.2887  , 10.3044  , 10.3201  , 10.3359  , 10.3516  , 10.3673  ,
+       10.383   , 10.3987  , 10.4144  , 10.4301  , 10.4458  , 10.4615  ,
+       10.4772  , 10.4929  , 10.5086  , 10.5244  , 10.5401  , 10.5558  ,
+       10.5715  , 10.5872  , 10.6029  , 10.6186  , 10.6343  , 10.65    ,
+       10.6657  , 10.6814  , 10.6971  , 10.7129  , 10.7286  , 10.7443  ,
+       10.76    , 10.7757  , 10.7914  , 10.8071  , 10.8228  , 10.8385  ,
+       10.8542  , 10.8699  , 10.8856  , 10.9014  , 10.9171  , 10.9328  ,
+       10.9485  , 10.9642  , 10.9799  , 10.9956  , 11.0113  , 11.027   ,
+       11.0427  , 11.0584  , 11.0741  , 11.0898  , 11.1055  , 11.1212  ,
+       11.137   , 11.1527  , 11.1684  , 11.1841  , 11.1998  , 11.2155  ,
+       11.2312  , 11.2469  , 11.2626  , 11.2783  , 11.294   , 11.3097  ,
+       11.3254  , 11.3412  , 11.3569  , 11.3726  , 11.3883  , 11.404   ,
+       11.4197  , 11.4354  , 11.4511  , 11.4668  , 11.4825  , 11.4982  ,
+       11.514   , 11.5297  , 11.5454  , 11.5611  , 11.5768  , 11.5925  ,
+       11.6082  , 11.6239  , 11.6396  , 11.6553  , 11.671   , 11.6867  ,
+       11.7024  , 11.7182  , 11.7339  , 11.7496  , 11.7653  , 11.781   ,
+       11.7967  , 11.8124  , 11.8281  , 11.8438  , 11.8595  , 11.8752  ,
+       11.891   , 11.9067  , 11.9224  , 11.9381  , 11.9538  , 11.9695  ,
+       11.9852  , 12.0009  , 12.0166  , 12.0323  , 12.048   , 12.0637  ]), [&lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;, &lt;sepia.SepiaModel.SepiaModel object&gt;], array([8.5000e-02, 1.4270e+00, 1.3300e-01, 3.6300e+00, 2.1400e-01,
+       5.3610e+00, 1.8310e+00, 4.1000e-02, 2.1850e+00, 8.2100e-01,
+       3.0800e-01, 4.5700e-01, 1.5900e-01, 5.0000e-01, 2.0000e-02,
+       7.0000e-01, 1.9980e+00, 2.7500e-01, 4.9000e+01, 3.7800e-01,
+       1.2160e+00, 6.2000e-02, 5.9300e-01, 7.5800e-01, 2.4253e+01,
+       3.4200e-01, 1.5480e+00, 1.3170e+00, 1.1690e+01, 5.4500e-01,
+       8.8800e-01, 2.9180e+00, 7.4750e+00, 9.6100e-01, 1.6820e+00,
+       1.0900e-01, 4.0920e+00, 4.1600e-01, 2.4400e-01, 2.6390e+00,
+       3.2440e+00, 6.2670e+00, 4.6560e+00, 0.0000e+00, 1.1240e+00,
+       9.1630e+00, 1.5892e+01, 2.3970e+00, 6.4500e-01, 1.8600e-01,
+       1.0390e+00]), array([ 0.020046,  0.17375 ,  0.330372,  0.48727 ,  0.644267,  0.801365,
+        0.958396,  1.11537 ,  1.27241 ,  1.42964 ,  1.58662 ,  1.74368 ,
+        1.90073 ,  2.05781 ,  2.21489 ,  2.37203 ,  2.52906 ,  2.68618 ,
+        2.84321 ,  3.00023 ,  3.15734 ,  3.31446 ,  3.47153 ,  3.62859 ,
+        3.78564 ,  3.94273 ,  4.09983 ,  4.25691 ,  4.41398 ,  4.57106 ,
+        4.72811 ,  4.88521 ,  5.04227 ,  5.1994  ,  5.35646 ,  5.51353 ,
+        5.6706  ,  5.8277  ,  5.98476 ,  6.14186 ,  6.29893 ,  6.45601 ,
+        6.61307 ,  6.77016 ,  6.92723 ,  7.08433 ,  7.24139 ,  7.39847 ,
+        7.55552 ,  7.71264 ,  7.86972 ,  8.0268  ,  8.18387 ,  8.34095 ,
+        8.49802 ,  8.65512 ,  8.81218 ,  8.96928 ,  9.12635 ,  9.28343 ,
+        9.4405  ,  9.59759 ,  9.75467 ,  9.91175 , 10.0688  , 10.2259  ,
+       10.383   , 10.5401  , 10.6971  , 10.8542  , 11.0113  , 11.1684  ,
+       11.3254  , 11.4825  , 11.6396  , 11.7967  , 11.9538  ]), array([1.02300502, 1.02200064, 1.01792495, 1.00981309, 1.00317463,
+       0.99529707, 0.98913607, 0.98196574, 0.97657548, 0.96862988,
+       0.96164773, 0.95846662, 0.95249287, 0.94469585, 0.94054531,
+       0.93463408, 0.93200257, 0.92742289, 0.92704302, 0.92231938,
+       0.9166361 , 0.91167795, 0.90669833, 0.90714676, 0.90367146,
+       0.90223471, 0.90091669, 0.89633303, 0.89395254, 0.89288331,
+       0.89265129, 0.89047421, 0.88710334, 0.88717945, 0.88310985,
+       0.8843919 , 0.87964539, 0.87958529, 0.87883646, 0.87932109,
+       0.87740503, 0.87571092, 0.87273775, 0.87330419, 0.87098568,
+       0.86875472, 0.86669791, 0.86840544, 0.86819715, 0.86632717,
+       0.86467665, 0.8645639 , 0.86447403, 0.863006  , 0.86043222,
+       0.86107589, 0.86085424, 0.86176827, 0.86249594, 0.86084971,
+       0.8601378 , 0.86020083, 0.85969619, 0.86202688, 0.86010262,
+       0.86164538, 0.86220835, 0.86027398, 0.8605709 , 0.86268845,
+       0.86427797, 0.86143885, 0.86353777, 0.8629087 , 0.86649718,
+       0.86529989, 0.86574848]), array([0.00559036, 0.00558532, 0.00557252, 0.00555219, 0.00553256,
+       0.00550849, 0.00549453, 0.00547303, 0.00545887, 0.00543946,
+       0.00542225, 0.00540692, 0.00538998, 0.00537036, 0.00535818,
+       0.00534317, 0.00533266, 0.00532166, 0.00531439, 0.00529888,
+       0.00529134, 0.00527519, 0.00526617, 0.00525957, 0.00525192,
+       0.00524354, 0.00523806, 0.00523041, 0.0052246 , 0.00521742,
+       0.00521425, 0.00520747, 0.00520268, 0.00520051, 0.00519127,
+       0.00519164, 0.00518519, 0.00518437, 0.00517902, 0.00517654,
+       0.00517094, 0.005166  , 0.00516419, 0.00516257, 0.00515708,
+       0.0051536 , 0.00514743, 0.00514704, 0.00514554, 0.00514236,
+       0.0051387 , 0.00513703, 0.00513453, 0.00513348, 0.00513015,
+       0.00513206, 0.00512755, 0.00512737, 0.00512728, 0.00512893,
+       0.00512778, 0.00512907, 0.00512334, 0.00512357, 0.00512677,
+       0.00512727, 0.00512694, 0.00512792, 0.00512734, 0.00512994,
+       0.00513347, 0.00512937, 0.00513039, 0.00513309, 0.00513849,
+       0.00513844, 0.00513986]))
+  kwargs: {}
+  exception:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Traceback (most recent call last):
+  File "/home/nramachandra/anaconda3/envs/qom_torch_tf/lib/python3.9/site-packages/emcee/ensemble.py", line 624, in __call__
+    return self.f(x, *self.args, **self.kwargs)
+  File "/home/nramachandra/Projects/MG_emu/Codes/CubicGalileonEmu/CubicGalileonEmu/mcmc.py", line 68, in ln_prob
+    return lp + ln_like(theta, redshift, x_grid, sepia_model_list, z_all, x, y, yerr)
+  File "/home/nramachandra/Projects/MG_emu/Codes/CubicGalileonEmu/CubicGalileonEmu/mcmc.py", line 42, in ln_like
+    model_grid, model_var_grid = emu_redshift(new_params, sepia_model_list, z_all)
+  File "/home/nramachandra/Projects/MG_emu/Codes/CubicGalileonEmu/CubicGalileonEmu/emu.py", line 98, in emu_redshift
+    Bk_z2, Bk_z2_err = emulate(sepia_model_z2, input_params)
+  File "/home/nramachandra/Projects/MG_emu/Codes/CubicGalileonEmu/CubicGalileonEmu/emu.py", line 31, in emulate
+    pred = SepiaEmulatorPrediction(t_pred=ip, samples=pred_samples, model=sepia_model)
+  File "/home/nramachandra/Projects/Hydro_runs/Sepia_trials/SEPIA/sepia/SepiaPredict.py", line 131, in __init__
+    wPred(self)
+  File "/home/nramachandra/Projects/Hydro_runs/Sepia_trials/SEPIA/sepia/SepiaPredict.py", line 493, in wPred
+    zxpredDist=SepiaDistCov(data.zt,xpredt, cat_ind=cat_ind)
+  File "/home/nramachandra/Projects/Hydro_runs/Sepia_trials/SEPIA/sepia/SepiaDistCov.py", line 63, in __init__
+    sqdist[:, not_cat] = np.square(data_notcat[self.ind[0], :] - data2_notcat[self.ind[1], :])
+KeyboardInterrupt</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>KeyboardInterrupt: </code></pre>
+</div>
+</div>
+<div id="cell-46" class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plot_mcmc(samples, params_list, if_truth_know<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-30-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-47" class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>f, a <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>, figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">5</span>)) </span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>input_params_and_redshift <span class="op">=</span> np.append(p_mcmc, redshift)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>bk_mcmc, err_mcmc <span class="op">=</span> emu_redshift(input_params_and_redshift[np.newaxis, :], sepia_model_list, z_all)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>a.plot(k_all, bk_mcmc[:, <span class="dv">0</span>], label<span class="op">=</span><span class="st">'Emulated at best MCMC'</span>, lw<span class="op">=</span><span class="dv">5</span>, ls<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>a.errorbar(x, y, yerr, label<span class="op">=</span><span class="st">'Mock target'</span>, ls<span class="op">=</span><span class="st">'none'</span>, lw<span class="op">=</span><span class="dv">1</span>, color <span class="op">=</span> <span class="st">"r"</span>)</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>a.scatter(x, y, s <span class="op">=</span> <span class="dv">5</span>, marker <span class="op">=</span> <span class="st">"h"</span>, color <span class="op">=</span> <span class="st">"r"</span>)</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>a.set_xscale(<span class="st">'log'</span>)</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'B(k) at MCMC constraints'</span>)</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>a.set_xlabel(<span class="vs">r'$k [h/Mpc]$'</span>)</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>a.set_ylabel(<span class="vs">r'$B(k)$'</span>)</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>plt.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-31-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/nesar/CubicGalileonEmu/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
