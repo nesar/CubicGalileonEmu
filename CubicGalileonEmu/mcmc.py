@@ -46,6 +46,8 @@ def ln_like(theta,
     model_var = np.interp(x, x_grid, model_var_grid[:, 0, 0])
   
     sigma2 = yerr**2  + model_var
+    sigma2 = yerr**2 # + model_var
+
     ll = -0.5 * np.sum((y - model)** 2 / sigma2 )
     
     return ll

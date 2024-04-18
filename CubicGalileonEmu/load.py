@@ -14,7 +14,9 @@ DATA_DIR = "data/"
 LIBRARY_ZK_FILE = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "z_k.txt").name
 LIBRARY_BK_FILE = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "Boost.npy").name
 LIBRARY_PARAM_FILE = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "cosmo_newdesign.txt").name
-PARAM_NAME = [r"$\Omega_m h^2$", r"$n_s$", r"$\sigma_8$", r"$E_{ds}$", r"$f_\phi$"]
+# PARAM_NAME = [r"$\Omega_m h^2$", r"$n_s$", r"$\sigma_8$", r"$E_{ds}$", r"$f_\phi$"]
+PARAM_NAME = [r"$\Omega_m$", r"$n_s$", r"$10^{9} A_s$", r"$h$", r"$f_\phi$"]
+
 
 # %% ../nbs/00_load.ipynb 6
 def load_boost_training(Bk_fileIn:str=LIBRARY_BK_FILE, # Input file for Boost
@@ -25,16 +27,26 @@ def load_boost_training(Bk_fileIn:str=LIBRARY_BK_FILE, # Input file for Boost
     
     z_all = zk_all[:, 0][np.isfinite(zk_all[:, 0])]
     k_all = zk_all[:, 1]
+
+    # z_all_argsort = np.argsort(z_all)
+    # z_all = z_all[z_all_argsort]
+    # Bk_all = Bk_all[:, z_all_argsort, :]
+
+    # k_select = np.where(k_all <= 4.0)
+    # Bk_all = Bk_all[:, :, k_select]
+    # k_all = k_all[k_select]
+
     
     return Bk_all, k_all, z_all
 
-# %% ../nbs/00_load.ipynb 7
+# %% ../nbs/00_load.ipynb 9
 def load_params(p_fileIn:str=LIBRARY_PARAM_FILE, # Input file for parameters
                ) -> np.array: # Parameters
     p_all = np.loadtxt(p_fileIn)
+    p_all[:, 2] = p_all[:, 2]/1e-9  # A_s rescaling
     return p_all
 
-# %% ../nbs/00_load.ipynb 11
+# %% ../nbs/00_load.ipynb 13
 def sepia_data_format(design:np.array=None, # Params array of shape (num_simulation, num_params)
                      y_vals:np.array=None, # Shape (num_simulation, num_y_values)
                      y_ind:np.array=None # Shape (num_y_values,)

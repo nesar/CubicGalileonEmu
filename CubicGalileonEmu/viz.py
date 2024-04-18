@@ -30,36 +30,48 @@ def plot_lines_with_param_color(param_array:np.array=None, # parameter array
                                 title_str:str=None, # Title string
                                 xlabel_str:str=None, # x-label string
                                 ylabel_str:str=None, # y-label string
-                                param_name_str:str=None, # Parameter string
+                                param_name_str:str=None, # Parameter string,
+                                ax: plt.Axes = None
                                ):
     
     
-    f, a = plt.subplots(1,1, figsize = (8, 5))  
+    # f, a = plt.subplots(1,1, figsize = (8, 5)
+    if ax is None:
+        f, ax = plt.subplots(1, 1, figsize=(8, 5))
+    else:
+        f = ax.figure  
 
     norm = mpl.colors.Normalize(vmin=param_array.min(), vmax=param_array.max())
     cmap = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.plasma)
     cmap.set_array([])
 
     for sim_index in range(param_array.shape[0]):
-        a.plot(x_array, y_array_all[sim_index], 
+        ax.plot(x_array, y_array_all[sim_index], 
                  '-', alpha= 0.5, c=cmap.to_rgba(param_array[sim_index]), 
                  label='Sim: '+str(sim_index) )
 
     # plt.plot(stellar_mass_test, gsmf_um_test, 'k.', label='UM z=0.00')
-    a.set_xscale('log')
+    ax.set_xscale('log')
     # plt.axhline(y=0, linestyle='dashed', color='black')
     # plt.yscale('log')
     # plt.xlim(4e9, )
     # plt.ylim(-0.02, 0.02)
 
-    clb = f.colorbar(cmap , ax=a)
+    if ax is None:
+        clb = f.colorbar(cmap , ax=ax)
+        clb.ax.tick_params(labelsize=15) 
+        clb.ax.set_title(param_name_str, fontsize=15)
 
-    clb.ax.tick_params(labelsize=15) 
-    clb.ax.set_title(param_name_str, fontsize=15)
+    # plt.title(title_str, fontsize=15)
+    # ax.set_xlabel(xlabel_str, fontsize=15)
+    # ax.set_ylabel(ylabel_str, fontsize=15)
 
-    plt.title(title_str, fontsize=15)
-    a.set_xlabel(xlabel_str, fontsize=15)
-    a.set_ylabel(ylabel_str, fontsize=15)
+    if title_str and ax is None:
+        plt.title(title_str, fontsize=15)
+    if xlabel_str:
+        ax.set_xlabel(xlabel_str, fontsize=15)
+    if ylabel_str:
+        ax.set_ylabel(ylabel_str, fontsize=15)
     
     return f
 
@@ -143,7 +155,7 @@ def sensitivity_plot(k_all, # all wavenumbers
                     ax[paramNo].set_yticks([], minor = True)
                     
                     ax[paramNo].set_xlim(2e-2, 1e1)
-                    ax[paramNo].set_ylim(0.83, 1.1)
+                    ax[paramNo].set_ylim(0.98, 1.3)
                             
             
             # Colorbar setup
@@ -158,7 +170,7 @@ def sensitivity_plot(k_all, # all wavenumbers
 
             cbarlabel = param_name[paramNo]
             cbar.set_label(cbarlabel, fontsize=20)
-            ax[paramNo].fill_between(k_all, 0.83, 1.1, where=(k_all > 1.2), color='k', alpha=0.15)
+            ax[paramNo].fill_between(k_all, 0.98, 1.3, where=(k_all > 1.2), color='k', alpha=0.15)
 
 
     ax[paramNo].set_xlabel('k[h/Mpc]', fontsize=18)
@@ -200,7 +212,7 @@ def validation_plot(k_all,
 
     ax2.get_yaxis().set_visible(False)
     
-    a[0].fill_between(k_all, 0.83, 1.1, where=(k_all > 1.2), color='k', alpha=0.15)
+    a[0].fill_between(k_all, 0.98, 1.3, where=(k_all > 1.2), color='k', alpha=0.15)
     a[1].fill_between(k_all, -0.012, 0.012, where=(k_all > 1.2), color='k', alpha=0.15)
 
 
@@ -212,7 +224,7 @@ def validation_plot(k_all,
     a[0].set_xscale('log')
     # plt.show()
     a[0].set_xlim(2e-2, 1e1)
-    a[0].set_ylim(0.83, 1.1)
+    a[0].set_ylim(0.98, 1.3)
     a[1].set_ylim(-0.012, 0.012)
     
     return f
@@ -238,7 +250,7 @@ def plot_mcmc(samples,
                         figureSize=10, 
                         plotDensity = True, 
                         filledPlots = True, 
-                        smoothingKernel = 2, 
+                        smoothingKernel = 3, 
                         nContourLevels=3,  
                         customLabelFont={'family':'DejaVu Sans', 'size':12}, 
                         customTickFont={'family':'DejaVu Sans', 'size':12},
@@ -251,7 +263,7 @@ def plot_mcmc(samples,
                         figureSize=10, 
                         plotDensity = True, 
                         filledPlots = True, 
-                        smoothingKernel = 2, 
+                        smoothingKernel = 3, 
                         nContourLevels=3,  
                         customLabelFont={'family':'DejaVu Sans', 'size':12}, 
                         customTickFont={'family':'DejaVu Sans', 'size':12},
