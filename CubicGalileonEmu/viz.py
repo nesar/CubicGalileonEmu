@@ -238,49 +238,6 @@ def validation_plot(k_all:np.array=None,
     return f
 
 # %% ../nbs/10_viz.ipynb 9
-# def plot_mcmc(samples, 
-#               params_list, 
-#               if_truth_know=False
-#               ):
-
-#     param1, param2, param3, param4, param5 = params_list
-
-#     paramRanges = ((param1[2], param1[3]), 
-#                    (param2[2], param2[3]), 
-#                    (param3[2], param3[3]),
-#                    (param4[2], param4[3]),
-#                    (param5[2], param5[3]),
-#                    )
-
-#     if if_truth_know:
-#         fig = pygtc.plotGTC(samples, paramNames=[param1[0], param2[0], param3[0], param4[0], param5[0]],
-#                         truths=[param1[1], param2[1], param3[1], param4[1], param5[1]],
-#                         figureSize=10, 
-#                         plotDensity = True, 
-#                         filledPlots = True, 
-#                         smoothingKernel = 3, 
-#                         nContourLevels=3,  
-#                         customLabelFont={'family':'DejaVu Sans', 'size':12}, 
-#                         customTickFont={'family':'DejaVu Sans', 'size':12},
-#                         # paramRanges=paramRanges
-#                        )
-    
-#     else:
-#         fig = pygtc.plotGTC(samples, paramNames=[param1[0], param2[0], param3[0], param4[0], param5[0]],
-#                         # truths=[param1[1], param2[1], param3[1], param4[1], param5[1]],
-#                         figureSize=10, 
-#                         plotDensity = True, 
-#                         filledPlots = True, 
-#                         smoothingKernel = 3, 
-#                         nContourLevels=3,  
-#                         customLabelFont={'family':'DejaVu Sans', 'size':12}, 
-#                         customTickFont={'family':'DejaVu Sans', 'size':12},
-#                         # paramRanges=paramRanges
-#                        )
-        
-#         return fig
-
-
 def plot_mcmc(samples:np.array, 
               params_list:list, 
               if_truth_know:bool=False):
@@ -295,7 +252,7 @@ def plot_mcmc(samples:np.array,
     fig = pygtc.plotGTC(samples, 
                         paramNames=param_names,
                         truths=truths,
-                        figureSize=6,
+                        figureSize=8,
                         plotDensity=True,
                         filledPlots=True,
                         smoothingKernel=3,

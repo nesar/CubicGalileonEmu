@@ -119,13 +119,13 @@ def do_mcmc(sampler,
 
     # We'll track how the average autocorrelation time estimate changes
     index = 0
-    autocorr = np.empty(max_n)
+    autocorr = np.empty(nrun)
 
     # This will be useful to testing convergence
     old_tau = np.inf
 
     # Now we'll sample for up to max_n steps
-    for sample in sampler.sample(coords, iterations=max_n, progress=True):
+    for sample in sampler.sample(coords, iterations=nrun, progress=True):
         # Only check convergence every 100 steps
         if sampler.iteration % 100:
             continue
