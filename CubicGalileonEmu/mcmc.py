@@ -9,7 +9,7 @@ import emcee
 import time
 from .emu import emu_redshift
 
-# %% ../nbs/04_mcmc.ipynb 5
+# %% ../nbs/04_mcmc.ipynb 4
 def ln_prior(theta, params_list):
     pdf_sum = 0
     for p, param in zip(theta, params_list):
@@ -20,7 +20,7 @@ def ln_prior(theta, params_list):
         pdf_sum += np.log(1.0 / (np.sqrt(2 * np.pi) * p_sigma)) - 0.5 * (p - p_mu) ** 2 / p_sigma ** 2
     return pdf_sum
 
-# %% ../nbs/04_mcmc.ipynb 6
+# %% ../nbs/04_mcmc.ipynb 5
 def ln_like(theta, 
             redshift,
             x_grid, 
@@ -53,7 +53,7 @@ def ln_like(theta,
     return ll
 
 
-# %% ../nbs/04_mcmc.ipynb 7
+# %% ../nbs/04_mcmc.ipynb 6
 def ln_prob(theta, 
             redshift,
             params_list, 
@@ -70,12 +70,12 @@ def ln_prob(theta,
         return -np.inf
     return lp + ln_like(theta, redshift, x_grid, sepia_model_list, z_all, x, y, yerr)
 
-# %% ../nbs/04_mcmc.ipynb 9
+# %% ../nbs/04_mcmc.ipynb 7
 def chain_init(params_list, ndim, nwalkers):
     pos0 = [[param[1] * 1.0 for param in params_list] + 1e-3 * np.random.randn(ndim) for _ in range(nwalkers)]
     return pos0
 
-# %% ../nbs/04_mcmc.ipynb 10
+# %% ../nbs/04_mcmc.ipynb 8
 def define_sampler(redshift, 
                    ndim, 
                    nwalkers, 
@@ -91,13 +91,15 @@ def define_sampler(redshift,
     sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_prob, args=(redshift, params_list, x_grid, sepia_model_list, z_all, x, y, yerr))
     return sampler
 
-# %% ../nbs/04_mcmc.ipynb 11
+# %% ../nbs/04_mcmc.ipynb 9
 def do_mcmc(sampler, 
             pos, 
             nrun, 
             ndim,
             if_burn=False
             ):
+    
+    print('Burn-in phase') if if_burn else print('Sampling phase')
 
     time0 = time.time()
     pos, prob, state = sampler.run_mcmc(pos, nrun)
@@ -108,16 +110,47 @@ def do_mcmc(sampler,
     samples = sampler.chain[:, :, :].reshape((-1, ndim))
 
     if if_burn: 
-        print('Burn-in phase')
         sampler.reset()
 
-    else:
-        print('Sampling phase')
+
+    '''
+
+    max_n = nrun
+
+    # We'll track how the average autocorrelation time estimate changes
+    index = 0
+    autocorr = np.empty(max_n)
+
+    # This will be useful to testing convergence
+    old_tau = np.inf
+
+    # Now we'll sample for up to max_n steps
+    for sample in sampler.sample(coords, iterations=max_n, progress=True):
+        # Only check convergence every 100 steps
+        if sampler.iteration % 100:
+            continue
+
+        # Compute the autocorrelation time so far
+        # Using tol=0 means that we'll always get an estimate even
+        # if it isn't trustworthy
+        tau = sampler.get_autocorr_time(tol=0)
+        autocorr[index] = np.mean(tau)
+        index += 1
+
+        # Check convergence
+        converged = np.all(tau * 100 < sampler.iteration)
+        converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
+        if converged:
+            break
+        old_tau = tau
+        
+
+    '''
 
     return pos, prob, state, samples, sampler
 
 
-# %% ../nbs/04_mcmc.ipynb 13
+# %% ../nbs/04_mcmc.ipynb 10
 def mcmc_results(samples):
     results = list(map(lambda v: (v[1], v[2] - v[1], v[1] - v[0]), zip(*np.percentile(samples, [16, 50, 84], axis=0))))
     print('mcmc results:', ' '.join(str(result[0]) for result in results))

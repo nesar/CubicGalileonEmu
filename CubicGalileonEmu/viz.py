@@ -107,11 +107,12 @@ def plot_train_diagnostics(sepia_model:SepiaModel=None, # Input data in SEPIA fo
     return theta_pairs, mcmc_trace
 
 # %% ../nbs/10_viz.ipynb 7
-def sensitivity_plot(k_all, # all wavenumbers
-                     params_all, # all parameters
-                     sepia_model, # SEPIA emulator model
-                     emulator_function, # function which takes in sepia model and parameters
-                     param_name, # Parameter name
+def sensitivity_plot(k_all:np.array=None, # all wavenumbers
+                     params_all:np.array=None, # all parameters
+                     sepia_model:SepiaModel=None, # SEPIA emulator model
+                     emulator_function=None, # function which takes in sepia model and parameters
+                     param_name:tuple=None, # Parameter name
+                     xy_lims:np.array=[2e-2, 1e1, 0.98, 1.3] 
                     ):
 
     color_by_index = 0
@@ -154,8 +155,8 @@ def sensitivity_plot(k_all, # all wavenumbers
                     ax[paramNo].set_ylabel('B(k)', fontsize=18)
                     ax[paramNo].set_yticks([], minor = True)
                     
-                    ax[paramNo].set_xlim(2e-2, 1e1)
-                    ax[paramNo].set_ylim(0.98, 1.3)
+                    ax[paramNo].set_xlim(xy_lims[0], xy_lims[1])
+                    ax[paramNo].set_ylim(xy_lims[2], xy_lims[3])
                             
             
             # Colorbar setup
@@ -170,7 +171,7 @@ def sensitivity_plot(k_all, # all wavenumbers
 
             cbarlabel = param_name[paramNo]
             cbar.set_label(cbarlabel, fontsize=20)
-            ax[paramNo].fill_between(k_all, 0.98, 1.3, where=(k_all > 1.2), color='k', alpha=0.15)
+            ax[paramNo].fill_between(k_all, xy_lims[0], xy_lims[1], where=(k_all > 1.2), color='k', alpha=0.15)
 
 
     ax[paramNo].set_xlabel('k[h/Mpc]', fontsize=18)
@@ -180,25 +181,32 @@ def sensitivity_plot(k_all, # all wavenumbers
     return fig
 
 # %% ../nbs/10_viz.ipynb 8
-def validation_plot(k_all, 
-                    target_vals, 
-                    pred_mean, 
-                    pred_quant
+def validation_plot(k_all:np.array=None, 
+                    target_vals:np.array=None, 
+                    pred_mean:np.array=None, 
+                    pred_quant:np.array=None, 
+                    xy_lims:np.array=[2e-2, 1e1, 0.98, 1.3]
                     ):
+    
+    delta_y_lims = [-0.021, 0.021]
 
     f, a = plt.subplots(2, 1, figsize=(8, 6), gridspec_kw={'height_ratios': [2, 1]}, sharex=True)
     plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.05)
 
     colors = ['b', 'r', 'g', ]
-    styles = ['-', '--', '-.']
-    styles_label = ['Hi-COLA', 'Emulated mean', 'Emulated (0.05, 0.95) quantile']
+    styles = ['-', '--']
+    styles_label = ['Hi-COLA', 'Emulated mean']
 
 
     for one_index in range(pred_mean.shape[1]):
 
         a[0].plot(k_all, target_vals[one_index], c=colors[one_index], ls=styles[0])
         a[0].plot(k_all, pred_mean[:, one_index], c=colors[one_index], ls=styles[1])
-        a[0].plot(k_all, pred_quant[:, one_index, 0], c=colors[one_index], ls=styles[2])
+        # a[0].plot(k_all, pred_quant[:, one_index, 0], c=colors[one_index], ls=styles[2])
+
+        a[0].fill_between(k_all, pred_quant[:, one_index, 0], pred_quant[:, one_index, 1], color=colors[one_index], alpha=0.2) 
+        #'Emulated (0.05, 0.95) quantile'
+
 
         a[1].plot(k_all, (pred_mean[:, one_index]/target_vals[one_index]) - 1, c=colors[one_index])
 
@@ -212,8 +220,8 @@ def validation_plot(k_all,
 
     ax2.get_yaxis().set_visible(False)
     
-    a[0].fill_between(k_all, 0.98, 1.3, where=(k_all > 1.2), color='k', alpha=0.15)
-    a[1].fill_between(k_all, -0.012, 0.012, where=(k_all > 1.2), color='k', alpha=0.15)
+    a[0].fill_between(k_all, xy_lims[0], xy_lims[1], where=(k_all > 1.2), color='k', alpha=0.15)
+    a[1].fill_between(k_all, delta_y_lims[0], delta_y_lims[1], where=(k_all > 1.2), color='k', alpha=0.15)
 
 
     a[0].legend(loc=1, title='Test configuration')
@@ -223,51 +231,78 @@ def validation_plot(k_all,
     a[0].set_ylabel('B(k)')
     a[0].set_xscale('log')
     # plt.show()
-    a[0].set_xlim(2e-2, 1e1)
-    a[0].set_ylim(0.98, 1.3)
-    a[1].set_ylim(-0.012, 0.012)
+    a[0].set_xlim(xy_lims[0], xy_lims[1])
+    a[0].set_ylim(xy_lims[2], xy_lims[3])
+    a[1].set_ylim(delta_y_lims[0], delta_y_lims[1])
     
     return f
 
 # %% ../nbs/10_viz.ipynb 9
-def plot_mcmc(samples, 
-              params_list, 
-              if_truth_know=False
-              ):
+# def plot_mcmc(samples, 
+#               params_list, 
+#               if_truth_know=False
+#               ):
 
-    param1, param2, param3, param4, param5 = params_list
+#     param1, param2, param3, param4, param5 = params_list
 
-    paramRanges = ((param1[2], param1[3]), 
-                   (param2[2], param2[3]), 
-                   (param3[2], param3[3]),
-                   (param4[2], param4[3]),
-                   (param5[2], param5[3]),
-                   )
+#     paramRanges = ((param1[2], param1[3]), 
+#                    (param2[2], param2[3]), 
+#                    (param3[2], param3[3]),
+#                    (param4[2], param4[3]),
+#                    (param5[2], param5[3]),
+#                    )
 
-    if if_truth_know:
-        fig = pygtc.plotGTC(samples, paramNames=[param1[0], param2[0], param3[0], param4[0], param5[0]],
-                        truths=[param1[1], param2[1], param3[1], param4[1], param5[1]],
-                        figureSize=10, 
-                        plotDensity = True, 
-                        filledPlots = True, 
-                        smoothingKernel = 3, 
-                        nContourLevels=3,  
-                        customLabelFont={'family':'DejaVu Sans', 'size':12}, 
-                        customTickFont={'family':'DejaVu Sans', 'size':12},
-                        # paramRanges=paramRanges
-                       )
+#     if if_truth_know:
+#         fig = pygtc.plotGTC(samples, paramNames=[param1[0], param2[0], param3[0], param4[0], param5[0]],
+#                         truths=[param1[1], param2[1], param3[1], param4[1], param5[1]],
+#                         figureSize=10, 
+#                         plotDensity = True, 
+#                         filledPlots = True, 
+#                         smoothingKernel = 3, 
+#                         nContourLevels=3,  
+#                         customLabelFont={'family':'DejaVu Sans', 'size':12}, 
+#                         customTickFont={'family':'DejaVu Sans', 'size':12},
+#                         # paramRanges=paramRanges
+#                        )
     
-    else:
-        fig = pygtc.plotGTC(samples, paramNames=[param1[0], param2[0], param3[0], param4[0], param5[0]],
-                        # truths=[param1[1], param2[1], param3[1], param4[1], param5[1]],
-                        figureSize=10, 
-                        plotDensity = True, 
-                        filledPlots = True, 
-                        smoothingKernel = 3, 
-                        nContourLevels=3,  
-                        customLabelFont={'family':'DejaVu Sans', 'size':12}, 
-                        customTickFont={'family':'DejaVu Sans', 'size':12},
-                        # paramRanges=paramRanges
-                       )
+#     else:
+#         fig = pygtc.plotGTC(samples, paramNames=[param1[0], param2[0], param3[0], param4[0], param5[0]],
+#                         # truths=[param1[1], param2[1], param3[1], param4[1], param5[1]],
+#                         figureSize=10, 
+#                         plotDensity = True, 
+#                         filledPlots = True, 
+#                         smoothingKernel = 3, 
+#                         nContourLevels=3,  
+#                         customLabelFont={'family':'DejaVu Sans', 'size':12}, 
+#                         customTickFont={'family':'DejaVu Sans', 'size':12},
+#                         # paramRanges=paramRanges
+#                        )
         
-        return fig
+#         return fig
+
+
+def plot_mcmc(samples:np.array, 
+              params_list:list, 
+              if_truth_know:bool=False):
+    
+    # Extract parameter names and truths, assuming params_list structure as
+    # [(name, truth, min_range, max_range), ...]
+    param_names = [param[0] for param in params_list]
+    truths = [param[1] for param in params_list] if if_truth_know else None
+    param_ranges = [(param[2], param[3]) for param in params_list]
+
+    # Configure the plot settings
+    fig = pygtc.plotGTC(samples, 
+                        paramNames=param_names,
+                        truths=truths,
+                        figureSize=6,
+                        plotDensity=True,
+                        filledPlots=True,
+                        smoothingKernel=3,
+                        nContourLevels=3,
+                        customLabelFont={'family': 'DejaVu Sans', 'size': 12},
+                        customTickFont={'family': 'DejaVu Sans', 'size': 12},
+                        # paramRanges=param_ranges
+                        )
+    
+    return fig
