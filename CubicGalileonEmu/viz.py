@@ -125,7 +125,7 @@ def sensitivity_plot(k_all:np.array=None, # all wavenumbers
     allMin = np.min(params_all, axis = 0)
     allMean = np.mean(params_all, axis = 0)
 
-    numPlots = 100
+    numPlots = 300
 
     fig, ax = plt.subplots(5,1, figsize = (7, 15), sharex='col')
     plt.subplots_adjust(wspace=0.25)
