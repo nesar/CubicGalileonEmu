@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['plot_lines_with_param_color', 'plot_scatter_matrix', 'plot_train_diagnostics', 'sensitivity_plot', 'validation_plot',
-           'plot_mcmc']
+           'plot_mcmc', 'generate_param_grid_with_fixed', 'plot_error_heatmap']
 
 # %% ../nbs/10_viz.ipynb 3
 import warnings
@@ -263,3 +263,46 @@ def plot_mcmc(samples:np.array,
                         )
     
     return fig
+
+# %% ../nbs/10_viz.ipynb 11
+def generate_param_grid_with_fixed(param_name:list=None, 
+                                   param_indices:np.array=None, 
+                                   fixed_params:np.array=None, 
+                                   param_min:np.array=None, 
+                                   param_max:np.array=None, 
+                                   steps:int=40
+                                   ):
+    # param_indices: Indices of the parameters to vary
+    # fixed_params: Dictionary of fixed parameter values with parameter names as keys
+
+    # Generate grids for the two varying parameters
+    varying_param_grids = [np.linspace(param_min[idx], param_max[idx], steps) for idx in param_indices]
+    grid_a, grid_b = np.meshgrid(*varying_param_grids)
+
+    # Generate the full parameter grid by inserting fixed values for other parameters
+    full_grid = np.empty((steps * steps, len(param_min)))
+    
+    # Set varying parameters
+    full_grid[:, param_indices[0]] = grid_a.ravel()
+    full_grid[:, param_indices[1]] = grid_b.ravel()
+    
+    # Set fixed parameters
+    for i in range(len(param_min)):
+        if i not in param_indices:
+            full_grid[:, i] = fixed_params[param_name[i]]
+    
+    return full_grid
+
+
+# Plot the heatmap of errors
+def plot_error_heatmap(errors:np.array=None, 
+                       param_names:list=None, 
+                       param_range:tuple=None):
+    f = plt.figure(figsize=(5, 4))
+    plt.imshow(errors, extent=(param_range[0][0], param_range[0][1], param_range[1][0], param_range[1][1]),
+               origin='lower', aspect='auto', cmap='YlOrRd')
+    plt.colorbar(label='Mean variance across k[h/Mpc]')
+    plt.xlabel(param_names[0])
+    plt.ylabel(param_names[1])
+    plt.title('Heatmap of emulator variance')
+    return f

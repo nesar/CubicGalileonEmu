@@ -113,42 +113,37 @@ def do_mcmc(sampler,
         sampler.reset()
 
 
-    '''
+    if True:
 
-    max_n = nrun
+        # We'll track how the average autocorrelation time estimate changes
+        index = 0
+        autocorr = np.empty(nrun)
 
-    # We'll track how the average autocorrelation time estimate changes
-    index = 0
-    autocorr = np.empty(nrun)
+        # This will be useful to testing convergence
+        old_tau = np.inf
 
-    # This will be useful to testing convergence
-    old_tau = np.inf
+        # Now we'll sample for up to max_n steps
+        for sample in sampler.sample(pos, iterations=nrun, progress=True):
+            # Only check convergence every 10 steps
+            if sampler.iteration % 100:
+                continue
 
-    # Now we'll sample for up to max_n steps
-    for sample in sampler.sample(coords, iterations=nrun, progress=True):
-        # Only check convergence every 100 steps
-        if sampler.iteration % 100:
-            continue
+            # Compute the autocorrelation time so far
+            # Using tol=0 means that we'll always get an estimate even
+            # if it isn't trustworthy
+            tau = sampler.get_autocorr_time(tol=0)
+            autocorr[index] = np.mean(tau)
+            index += 1
 
-        # Compute the autocorrelation time so far
-        # Using tol=0 means that we'll always get an estimate even
-        # if it isn't trustworthy
-        tau = sampler.get_autocorr_time(tol=0)
-        autocorr[index] = np.mean(tau)
-        index += 1
+            # Check convergence
+            converged = np.all(tau * 100 < sampler.iteration)
+            converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
+            if converged:
+                break
+            old_tau = tau
+            # print(index)
 
-        # Check convergence
-        converged = np.all(tau * 100 < sampler.iteration)
-        converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
-        if converged:
-            break
-        old_tau = tau
-        
-
-    '''
-
-    return pos, prob, state, samples, sampler
-
+    return pos, prob, state, samples, sampler, autocorr, index
 
 # %% ../nbs/04_mcmc.ipynb 10
 def mcmc_results(samples):
