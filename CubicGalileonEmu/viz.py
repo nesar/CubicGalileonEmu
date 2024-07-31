@@ -193,7 +193,7 @@ def validation_plot(k_all:np.array=None,
     f, a = plt.subplots(2, 1, figsize=(8, 6), gridspec_kw={'height_ratios': [2, 1]}, sharex=True)
     plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.05)
 
-    colors = ['b', 'r', 'g', ]
+    colors = ['b', 'r', 'g', 'y', 'cyan', 'magenta']
     styles = ['-', '--']
     styles_label = ['Hi-COLA', 'Emulated mean']
 
