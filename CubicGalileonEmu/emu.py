@@ -26,30 +26,41 @@ def enablePrint():
     sys._jupyter_stdout = sys.stdout
     sys.stdout = sys.__stdout__
 
-# %% ../nbs/03_emu.ipynb 5
-def emulate(sepia_model:SepiaModel=None, # Input data in SEPIA format
-        input_params:np.array=None, #Input parameter array 
-       ) -> tuple: # 2 np.array of mean and (0.05,0.95) quantile in prediction
+# %% ../nbs/03_emu.ipynb 8
+def emulate(sepia_model: SepiaModel = None,  # Input model in SEPIA format
+                 sepia_data: SepiaData = None,  # Input data in SEPIA format
+                 input_params: np.array = None #Input parameter array 
+                 ) -> tuple: # 2 np.array of mean and std
     
+    if input_params.ndim == 1:
+        input_params = np.expand_dims(input_params, axis=0)
     
-    if len(input_params.shape) == 1:
-        ip = np.expand_dims(input_params, axis=0)
-        
-    else:
-        ip = input_params
-        
-    pred_samples= sepia_model.get_samples(numsamples=10)
-        
-    pred = SepiaEmulatorPrediction(t_pred=ip, samples=pred_samples, model=sepia_model)
-    
-    pred_samps = pred.get_y()
-    
-    pred_mean = np.mean(pred_samps, axis=0).T
-    pred_err = np.quantile(pred_samps, [0.05, 0.95], axis=0).T
-    
-    return pred_mean, pred_err
+    # Fetch prediction samples once, assuming it can be reused
+    pred_samples = sepia_model.get_samples(numsamples=1)
 
-# %% ../nbs/03_emu.ipynb 6
+    # Assuming SepiaEmulatorPrediction can process batch inputs
+    preds = [SepiaEmulatorPrediction(t_pred=np.expand_dims(param, axis=0), samples=pred_samples, model=sepia_model, storeMuSigma=True) 
+             for param in input_params]
+    
+    # Extract mu and sigma in a batch-wise fashion
+    pred_means = np.array([pred.mu[0] for pred in preds])
+    pred_sigmas = np.array([np.diag(pred.sigma[0]) for pred in preds])
+    
+    # Dot product in batch: mu_dot_K
+    K_matrix = sepia_data.sim_data.K
+    orig_y_sd, orig_y_mean = sepia_data.sim_data.orig_y_sd, sepia_data.sim_data.orig_y_mean
+
+    mu_dot_K = pred_means[:, :K_matrix.shape[0]] @ K_matrix
+    std_dot_K = np.sqrt(pred_sigmas[:, :K_matrix.shape[0]]) @ K_matrix
+    
+    # Rescaling in a single operation
+    mu_dot_K_rescaled = orig_y_sd * mu_dot_K + orig_y_mean
+    std_dot_K_rescaled = orig_y_sd * std_dot_K + orig_y_mean
+
+    # return np.array(preds), mu_dot_K_rescaled, std_dot_K_rescaled
+    return mu_dot_K_rescaled.T, std_dot_K_rescaled.T
+
+# %% ../nbs/03_emu.ipynb 9
 def load_model_multiple(model_dir:str=None, # Pickle directory path
                         p_train_all:np.array=None, # Parameter array
                         y_vals_all:np.array=None, # Target y-values array
@@ -61,6 +72,7 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
     blockPrint()
     
     model_list = []
+    data_list = []
     
     for z_index in z_index_range:
         
@@ -72,18 +84,42 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
         model_filename = model_dir + 'multivariate_model_z_index' + str(z_index) 
         sepia_model_z = gp_load(sepia_model_i, model_filename)
         model_list.append(sepia_model_z)
+        data_list.append(sepia_data)
 
     enablePrint()
 
     print('Number of models loaded: ' + str(len(model_list))  )
 
+    
+    '''
+    # def sepia_data_by_redshift(redshift):
+    ## Data prep
+    Bk_all, k_all, z_all = load_boost_data()
+    p_all = load_params()
+    z_index = np.argmin(np.abs(z_all - redshift))
+    print('Redshift index: ' + str(z_index))
 
-    return model_list
+    # Load validation data
+    train_indices = [i for i in  np.arange(49)] # if i not in test_indices]
+    p_all_train = p_all[train_indices]
+    y_vals_train = Bk_all[:, z_index, :][train_indices]
+    print('Redshift: ' + str(z_all[z_index]))
+
+    sepia_data_z = sepia_data_format(p_all_train, y_vals_train, k_all)
+    do_pca(sepia_data_z, exp_variance=0.95)
+
+    return sepia_data_z
+
+    '''
+
+
+    return model_list, data_list
  
 
-# %% ../nbs/03_emu.ipynb 7
+# %% ../nbs/03_emu.ipynb 11
 def emu_redshift(input_params_and_redshift:np.array=None, # Input parameters (along with redshift) 
                  sepia_model_list:list=None,
+                 sepia_data_list:list=None,
                  z_all:np.array=None): # All the trained models
     
     z = input_params_and_redshift[:, -1]
@@ -93,29 +129,39 @@ def emu_redshift(input_params_and_redshift:np.array=None, # Input parameters (al
     if (z == 0):
         # No redshift interpolation for z=0
         GPm, PCAm = model_load(snap_ID=LAST_SNAP, nRankMax=DEFAULT_PCA_RANK)
-        Pk_interp = emulate(sepia_model, input_params)
+        Pk_interp = emulate(sepia_model, sepia_data, input_params)
         
         
     else:
     '''
     
+    
+    # CHOOSE SEPIA DATA ACCORDING TO REDSHIFT AND USE IT 
+    
     # Linear interpolation between z1 < z < z2
     snap_idx_nearest = (np.abs(z_all - z)).argmin()
     if (z > z_all[snap_idx_nearest]):
         snap_ID_z1 = snap_idx_nearest - 1
+        
     else:
         snap_ID_z1 = snap_idx_nearest
     snap_ID_z2 = snap_ID_z1 + 1
+
+    z1 = z_all[snap_ID_z1]
+    z2 = z_all[snap_ID_z2]
+
+    # sepia_data_z1 = sepia_data_by_redshift(redshift=z1)
+    # sepia_data_z2 = sepia_data_by_redshift(redshift=z2)
+    sepia_data_z1 = sepia_data_list[snap_ID_z1]
+    sepia_data_z2 = sepia_data_list[snap_ID_z2]
     
 
     sepia_model_z1 = sepia_model_list[snap_ID_z1]
-    Bk_z1, Bk_z1_err = emulate(sepia_model_z1, input_params)
-    z1 = z_all[snap_ID_z1]
+    Bk_z1, Bk_z1_err = emulate(sepia_model_z1, sepia_data_z1, input_params)
     
 
     sepia_model_z2 = sepia_model_list[snap_ID_z2]
-    Bk_z2, Bk_z2_err = emulate(sepia_model_z2, input_params)
-    z2 = z_all[snap_ID_z2]
+    Bk_z2, Bk_z2_err = emulate(sepia_model_z2, sepia_data_z2, input_params)
 
     Bk_interp = np.zeros_like(Bk_z1)
     Bk_interp = Bk_z2 + (Bk_z1 - Bk_z2)*(z - z2)/(z1 - z2)

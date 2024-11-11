@@ -25,6 +25,7 @@ def ln_like(theta,
             redshift,
             x_grid, 
             sepia_model_list, 
+            sepia_data_list,
             z_all, 
             x, 
             y, 
@@ -40,12 +41,14 @@ def ln_like(theta,
 #     print('Theta', len(theta))
 #     print('New params', new_params.shape)
         
-    model_grid, model_var_grid = emu_redshift(new_params, sepia_model_list, z_all)
+    model_grid, model_err_grid = emu_redshift(new_params, sepia_model_list, sepia_data_list, z_all)
         
     model = np.interp(x, x_grid, model_grid[:, 0])
-    model_var = np.interp(x, x_grid, model_var_grid[:, 0, 0])
+    # model_err = np.interp(x, x_grid, model_err_grid[:, 0, 0])
+    
+    # model_err = np.interp(x, x_grid, model_err_grid[:, 0])
   
-    sigma2 = yerr**2  + model_var
+    # sigma2 = yerr**2  + model_err
     sigma2 = yerr**2 # + model_var
 
     ll = -0.5 * np.sum((y - model)** 2 / sigma2 )
@@ -59,6 +62,7 @@ def ln_prob(theta,
             params_list, 
             x_grid, 
             sepia_model_list, 
+            sepia_data_list,
             z_all, 
             x, 
             y, 
@@ -68,7 +72,7 @@ def ln_prob(theta,
     lp = ln_prior(theta, params_list)
     if not np.isfinite(lp):
         return -np.inf
-    return lp + ln_like(theta, redshift, x_grid, sepia_model_list, z_all, x, y, yerr)
+    return lp + ln_like(theta, redshift, x_grid, sepia_model_list, sepia_data_list, z_all, x, y, yerr)
 
 # %% ../nbs/04_mcmc.ipynb 7
 def chain_init(params_list, ndim, nwalkers):
@@ -82,13 +86,14 @@ def define_sampler(redshift,
                    params_list, 
                    x_grid, 
                    sepia_model_list, 
+                   sepia_data_list,
                    z_all, 
                    x, 
                    y, 
                    yerr
                    ):
     
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_prob, args=(redshift, params_list, x_grid, sepia_model_list, z_all, x, y, yerr))
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_prob, args=(redshift, params_list, x_grid, sepia_model_list, sepia_data_list, z_all, x, y, yerr))
     return sampler
 
 # %% ../nbs/04_mcmc.ipynb 9

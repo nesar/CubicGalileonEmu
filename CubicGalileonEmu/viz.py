@@ -110,6 +110,7 @@ def plot_train_diagnostics(sepia_model:SepiaModel=None, # Input data in SEPIA fo
 def sensitivity_plot(k_all:np.array=None, # all wavenumbers
                      params_all:np.array=None, # all parameters
                      sepia_model:SepiaModel=None, # SEPIA emulator model
+                     sepia_data: SepiaData = None,  # Input data in SEPIA format
                      emulator_function=None, # function which takes in sepia model and parameters
                      param_name:tuple=None, # Parameter name
                      xy_lims:np.array=[2e-2, 1e1, 0.98, 1.3] 
@@ -146,7 +147,7 @@ def sensitivity_plot(k_all:np.array=None, # all wavenumbers
 
                     color = colormap(normalize(para_plot[paramNo]))
 
-                    gsmf_decoded, _ = emulator_function(sepia_model, para_plot)
+                    gsmf_decoded, _ = emulator_function(sepia_model, sepia_data, para_plot)
 
                     lineObj = ax[paramNo].plot(k_all, gsmf_decoded, lw= 1.5, color = color) 
 
@@ -180,11 +181,11 @@ def sensitivity_plot(k_all:np.array=None, # all wavenumbers
     
     return fig
 
-# %% ../nbs/10_viz.ipynb 8
+# %% ../nbs/10_viz.ipynb 9
 def validation_plot(k_all:np.array=None, 
                     target_vals:np.array=None, 
                     pred_mean:np.array=None, 
-                    pred_quant:np.array=None, 
+                    pred_std:np.array=None, 
                     xy_lims:np.array=[2e-2, 1e1, 0.98, 1.3]
                     ):
     
@@ -204,7 +205,7 @@ def validation_plot(k_all:np.array=None,
         a[0].plot(k_all, pred_mean[:, one_index], c=colors[one_index], ls=styles[1])
         # a[0].plot(k_all, pred_quant[:, one_index, 0], c=colors[one_index], ls=styles[2])
 
-        a[0].fill_between(k_all, pred_quant[:, one_index, 0], pred_quant[:, one_index, 1], color=colors[one_index], alpha=0.2) 
+        a[0].fill_between(k_all, pred_mean[:, one_index] - pred_std[:, one_index], pred_mean[:, one_index] + pred_std[:, one_index], color=colors[one_index], alpha=0.2) 
         #'Emulated (0.05, 0.95) quantile'
 
 
@@ -237,7 +238,7 @@ def validation_plot(k_all:np.array=None,
     
     return f
 
-# %% ../nbs/10_viz.ipynb 9
+# %% ../nbs/10_viz.ipynb 10
 def plot_mcmc(samples:np.array, 
               params_list:list, 
               if_truth_know:bool=False):
@@ -264,7 +265,7 @@ def plot_mcmc(samples:np.array,
     
     return fig
 
-# %% ../nbs/10_viz.ipynb 11
+# %% ../nbs/10_viz.ipynb 12
 def generate_param_grid_with_fixed(param_name:list=None, 
                                    param_indices:np.array=None, 
                                    fixed_params:np.array=None, 
