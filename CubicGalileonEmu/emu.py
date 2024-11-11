@@ -134,10 +134,7 @@ def emu_redshift(input_params_and_redshift:np.array=None, # Input parameters (al
         
     else:
     '''
-    
-    
-    # CHOOSE SEPIA DATA ACCORDING TO REDSHIFT AND USE IT 
-    
+        
     # Linear interpolation between z1 < z < z2
     snap_idx_nearest = (np.abs(z_all - z)).argmin()
     if (z > z_all[snap_idx_nearest]):
