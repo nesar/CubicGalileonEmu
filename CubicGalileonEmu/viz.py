@@ -295,13 +295,14 @@ def generate_param_grid_with_fixed(param_name:list=None,
     return full_grid
 
 
+# %% ../nbs/10_viz.ipynb 13
 # Plot the heatmap of errors
 def plot_error_heatmap(errors:np.array=None, 
                        param_names:list=None, 
                        param_range:tuple=None):
     f = plt.figure(figsize=(5, 4))
     plt.imshow(errors, extent=(param_range[0][0], param_range[0][1], param_range[1][0], param_range[1][1]),
-               origin='lower', aspect='auto', cmap='YlOrRd')
+               origin='lower', aspect='auto', cmap='gist_rainbow')
     plt.colorbar(label='Mean variance across k[h/Mpc]')
     plt.xlabel(param_names[0])
     plt.ylabel(param_names[1])
