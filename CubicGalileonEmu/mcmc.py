@@ -46,9 +46,9 @@ def ln_like(theta,
     model = np.interp(x, x_grid, model_grid[:, 0])
     # model_err = np.interp(x, x_grid, model_err_grid[:, 0, 0])
     
-    # model_err = np.interp(x, x_grid, model_err_grid[:, 0])
+    model_err = np.interp(x, x_grid, model_err_grid[:, 0])
   
-    # sigma2 = yerr**2  + model_err
+    sigma2 = yerr**2  + model_err
     sigma2 = yerr**2 # + model_var
 
     ll = -0.5 * np.sum((y - model)** 2 / sigma2 )

@@ -9,7 +9,7 @@ from sepia.SepiaData import SepiaData
 
 # %% ../nbs/01_pca.ipynb 4
 def do_pca(sepia_data:SepiaData=None, # Input data in SEPIA format
-           exp_variance:float=0.95, # Explained variance
+           exp_variance:float=0.99, # Explained variance
            do_discrepancy:bool=False, #For discrepancy modeling
           ) -> SepiaModel: # sepia.SepiaModel.SepiaModel
     
