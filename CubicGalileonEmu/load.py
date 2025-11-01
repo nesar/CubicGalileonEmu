@@ -64,7 +64,7 @@ def load_params(p_fileIn:str=LIBRARY_PARAM_FILE, # Input file for parameters
     p_all[:, 2] = p_all[:, 2]/1e-9  # A_s rescaling
     return p_all
 
-# %% ../nbs/00_load.ipynb 16
+# %% ../nbs/00_load.ipynb 17
 def sepia_data_format(design:np.array=None, # Params array of shape (num_simulation, num_params)
                      y_vals:np.array=None, # Shape (num_simulation, num_y_values)
                      y_ind:np.array=None # Shape (num_y_values,)
