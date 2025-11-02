@@ -2,13 +2,14 @@
 
 # %% auto 0
 __all__ = ['DATA_DIR', 'LIBRARY_ZK_FILE', 'LIBRARY_BK_FILE', 'LIBRARY_BKLIN_FILE', 'LIBRARY_PARAM_FILE', 'PARAM_NAME',
-           'LIBRARY_ZK_FILE_VAL', 'LIBRARY_BK_FILE_VAL', 'LIBRARY_PARAM_FILE_VAL', 'load_boost_data',
+           'LIBRARY_ZK_FILE_VAL', 'LIBRARY_BK_FILE_VAL', 'LIBRARY_PARAM_FILE_VAL', 'smooth_func', 'load_boost_data',
            'load_boost_data_lin', 'load_params', 'sepia_data_format']
 
 # %% ../nbs/00_load.ipynb 3
 import numpy as np
 import pkg_resources
 from sepia.SepiaData import SepiaData
+from scipy.signal import savgol_filter
 
 # %% ../nbs/00_load.ipynb 5
 DATA_DIR = "data/"
@@ -26,6 +27,19 @@ LIBRARY_PARAM_FILE_VAL = pkg_resources.resource_stream("CubicGalileonEmu", DATA_
 
 
 # %% ../nbs/00_load.ipynb 6
+def smooth_func(f_in:np.ndarray=None # Unsmoothed array
+                ) -> np.ndarray: # Smoothed array
+    # window size 51, polynomial order 3
+    window_size = 17
+    polynomial_order = 3
+
+    f_out = np.zeros_like(f_in)
+    for sim_index in range(f_in.shape[0]):
+        f_out[sim_index] = savgol_filter(f_in[sim_index], window_size, polynomial_order)
+    
+    return f_out
+
+# %% ../nbs/00_load.ipynb 7
 def load_boost_data(Bk_fileIn:str=LIBRARY_BK_FILE, # Input file for Boost
                         Zk_fileIn:str=LIBRARY_ZK_FILE, # Input file for redshift and wavenumbers
                         ) -> tuple: # Boost, wavenumbers, redshifts 
@@ -43,10 +57,12 @@ def load_boost_data(Bk_fileIn:str=LIBRARY_BK_FILE, # Input file for Boost
     # Bk_all = Bk_all[:, :, k_select]
     # k_all = k_all[k_select]
 
+    Bk_all = smooth_func(Bk_all)
+
     
     return Bk_all, k_all, z_all
 
-# %% ../nbs/00_load.ipynb 7
+# %% ../nbs/00_load.ipynb 8
 def load_boost_data_lin(Bk_fileIn:str=LIBRARY_BKLIN_FILE, # Input file for Boost
                         Zk_fileIn:str=LIBRARY_ZK_FILE, # Input file for redshift and wavenumbers
                         ) -> tuple: # Boost, wavenumbers, redshifts 
@@ -57,14 +73,14 @@ def load_boost_data_lin(Bk_fileIn:str=LIBRARY_BKLIN_FILE, # Input file for Boost
     k_all = zk_all[:, 1]    
     return Bk_all, k_all, z_all
 
-# %% ../nbs/00_load.ipynb 8
+# %% ../nbs/00_load.ipynb 9
 def load_params(p_fileIn:str=LIBRARY_PARAM_FILE, # Input file for parameters
                ) -> np.array: # Parameters
     p_all = np.loadtxt(p_fileIn)
     p_all[:, 2] = p_all[:, 2]/1e-9  # A_s rescaling
     return p_all
 
-# %% ../nbs/00_load.ipynb 17
+# %% ../nbs/00_load.ipynb 19
 def sepia_data_format(design:np.array=None, # Params array of shape (num_simulation, num_params)
                      y_vals:np.array=None, # Shape (num_simulation, num_y_values)
                      y_ind:np.array=None # Shape (num_y_values,)
