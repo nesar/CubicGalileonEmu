@@ -153,7 +153,7 @@ def sensitivity_plot(k_all:np.array=None, # all wavenumbers
 
                     # ax[paramNo].set_yscale('log')
                     ax[paramNo].set_xscale('log')
-                    ax[paramNo].set_ylabel('P(k)', fontsize=18)
+                    ax[paramNo].set_ylabel('B(k)', fontsize=18)
                     ax[paramNo].set_yticks([], minor = True)
                     
                     ax[paramNo].set_xlim(xy_lims[0], xy_lims[1])
@@ -205,7 +205,10 @@ def validation_plot(k_all:np.array=None,
         a[0].plot(k_all, pred_mean[:, one_index], c=colors[one_index], ls=styles[1])
         # a[0].plot(k_all, pred_quant[:, one_index, 0], c=colors[one_index], ls=styles[2])
 
-        a[0].fill_between(k_all, pred_mean[:, one_index] - pred_std[:, one_index], pred_mean[:, one_index] + pred_std[:, one_index], color=colors[one_index], alpha=0.2) 
+        a[0].fill_between(k_all, 
+                          pred_mean[:, one_index] - pred_std[:, one_index], 
+                          pred_mean[:, one_index] + pred_std[:, one_index], 
+                          color=colors[one_index], alpha=0.2) 
         #'Emulated (0.05, 0.95) quantile'
 
 
@@ -228,8 +231,8 @@ def validation_plot(k_all:np.array=None,
     a[0].legend(loc=1, title='Test configuration')
     ax2.legend(loc=3)
     a[1].set_xlabel('k[h/Mpc]')
-    a[1].set_ylabel(r'$\delta P(k)/P(k)$')
-    a[0].set_ylabel('P(k)')
+    a[1].set_ylabel(r'$\delta B(k)/B(k)$')
+    a[0].set_ylabel('B(k)')
     a[0].set_xscale('log')
     # plt.show()
     a[0].set_xlim(xy_lims[0], xy_lims[1])

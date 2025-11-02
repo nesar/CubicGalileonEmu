@@ -61,6 +61,43 @@ def emulate(sepia_model: SepiaModel = None,  # Input model in SEPIA format
     return mu_dot_K_rescaled.T, std_dot_K_rescaled.T
 
 # %% ../nbs/03_emu.ipynb 9
+def emulate(sepia_model: SepiaModel = None,  # Input model in SEPIA format
+                 sepia_data: SepiaData = None,  # Input data in SEPIA format
+                 input_params: np.array = None #Input parameter array 
+                 ) -> tuple: # 2 np.array of mean and std
+    
+    if input_params.ndim == 1:
+        input_params = np.expand_dims(input_params, 0)
+
+    K = sepia_data.sim_data.K            # shape [r, p] or [p, r] depending on SEPIA; adjust transpose below
+    y_sd, y_mean = sepia_data.sim_data.orig_y_sd, sepia_data.sim_data.orig_y_mean
+
+    pred_samples = sepia_model.get_samples(numsamples=1)
+    preds = [SepiaEmulatorPrediction(t_pred=param[None, :], samples=pred_samples,
+                                     model=sepia_model, storeMuSigma=True)
+             for param in input_params]
+
+    means, stds = [], []
+    # If K is [p, r], use K_T = K.T; if K is [r, p], use K_T = K
+    K_T = K.T  # assumes sepia_data.sim_data.K maps latent -> outputs with y = K^T x
+
+    for pred in preds:
+        mu = pred.mu[0]            # shape [r]
+        Sigma = pred.sigma[0]      # shape [r, r]
+
+        y_mu = K_T @ mu                            # shape [p]
+        y_cov = K_T @ Sigma @ K                    # shape [p, p]
+        y_std = np.sqrt(np.clip(np.diag(y_cov), 0, None))
+
+        y_mu = y_sd * y_mu + y_mean
+        y_std = y_sd * y_std
+
+        means.append(y_mu)
+        stds.append(y_std)
+
+    return np.stack(means, axis=1), np.stack(stds, axis=1)
+
+# %% ../nbs/03_emu.ipynb 10
 def load_model_multiple(model_dir:str=None, # Pickle directory path
                         p_train_all:np.array=None, # Parameter array
                         y_vals_all:np.array=None, # Target y-values array
@@ -116,7 +153,7 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
     return model_list, data_list
  
 
-# %% ../nbs/03_emu.ipynb 11
+# %% ../nbs/03_emu.ipynb 12
 def emu_redshift(input_params_and_redshift:np.array=None, # Input parameters (along with redshift) 
                  sepia_model_list:list=None,
                  sepia_data_list:list=None,
