@@ -42,7 +42,7 @@ def smooth_func(f_in:np.ndarray=None # Unsmoothed array
 # %% ../nbs/00_load.ipynb 7
 def load_boost_data(Bk_fileIn:str=LIBRARY_BK_FILE, # Input file for Boost
                         Zk_fileIn:str=LIBRARY_ZK_FILE, # Input file for redshift and wavenumbers
-                        ) -> tuple: # Boost, wavenumbers, redshifts 
+                        ) -> tuple: # Boost, Smoothed Boost, wavenumbers, redshifts 
     Bk_all = np.load(Bk_fileIn)
     zk_all = np.loadtxt(Zk_fileIn)
     
@@ -57,10 +57,10 @@ def load_boost_data(Bk_fileIn:str=LIBRARY_BK_FILE, # Input file for Boost
     # Bk_all = Bk_all[:, :, k_select]
     # k_all = k_all[k_select]
 
-    Bk_all = smooth_func(Bk_all)
+    Bk_all_smooth = smooth_func(Bk_all)
 
     
-    return Bk_all, k_all, z_all
+    return Bk_all, Bk_all_smooth, k_all, z_all
 
 # %% ../nbs/00_load.ipynb 8
 def load_boost_data_lin(Bk_fileIn:str=LIBRARY_BKLIN_FILE, # Input file for Boost

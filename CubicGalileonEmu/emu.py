@@ -26,40 +26,6 @@ def enablePrint():
     sys._jupyter_stdout = sys.stdout
     sys.stdout = sys.__stdout__
 
-# %% ../nbs/03_emu.ipynb 8
-def emulate(sepia_model: SepiaModel = None,  # Input model in SEPIA format
-                 sepia_data: SepiaData = None,  # Input data in SEPIA format
-                 input_params: np.array = None #Input parameter array 
-                 ) -> tuple: # 2 np.array of mean and std
-    
-    if input_params.ndim == 1:
-        input_params = np.expand_dims(input_params, axis=0)
-    
-    # Fetch prediction samples once, assuming it can be reused
-    pred_samples = sepia_model.get_samples(numsamples=1)
-
-    # Assuming SepiaEmulatorPrediction can process batch inputs
-    preds = [SepiaEmulatorPrediction(t_pred=np.expand_dims(param, axis=0), samples=pred_samples, model=sepia_model, storeMuSigma=True) 
-             for param in input_params]
-    
-    # Extract mu and sigma in a batch-wise fashion
-    pred_means = np.array([pred.mu[0] for pred in preds])
-    pred_sigmas = np.array([np.diag(pred.sigma[0]) for pred in preds])
-    
-    # Dot product in batch: mu_dot_K
-    K_matrix = sepia_data.sim_data.K
-    orig_y_sd, orig_y_mean = sepia_data.sim_data.orig_y_sd, sepia_data.sim_data.orig_y_mean
-
-    mu_dot_K = pred_means[:, :K_matrix.shape[0]] @ K_matrix
-    std_dot_K = np.sqrt(pred_sigmas[:, :K_matrix.shape[0]]) @ K_matrix
-    
-    # Rescaling in a single operation
-    mu_dot_K_rescaled = orig_y_sd * mu_dot_K + orig_y_mean
-    std_dot_K_rescaled = orig_y_sd * std_dot_K + orig_y_mean
-
-    # return np.array(preds), mu_dot_K_rescaled, std_dot_K_rescaled
-    return mu_dot_K_rescaled.T, std_dot_K_rescaled.T
-
 # %% ../nbs/03_emu.ipynb 9
 def emulate(sepia_model: SepiaModel = None,  # Input model in SEPIA format
                  sepia_data: SepiaData = None,  # Input data in SEPIA format
