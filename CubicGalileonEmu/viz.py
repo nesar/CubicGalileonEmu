@@ -189,7 +189,7 @@ def validation_plot(k_all:np.array=None,
                     xy_lims:np.array=[2e-2, 1e1, 0.98, 1.3]
                     ):
     
-    delta_y_lims = [-0.021, 0.021]
+    delta_y_lims = [-0.031, 0.031]
 
     f, a = plt.subplots(2, 1, figsize=(8, 6), gridspec_kw={'height_ratios': [2, 1]}, sharex=True)
     plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.05)
@@ -224,12 +224,15 @@ def validation_plot(k_all:np.array=None,
 
     ax2.get_yaxis().set_visible(False)
     
-    a[0].fill_between(k_all, xy_lims[0], xy_lims[1], where=(k_all > 1.2), color='k', alpha=0.15)
-    a[1].fill_between(k_all, delta_y_lims[0], delta_y_lims[1], where=(k_all > 1.2), color='k', alpha=0.15)
+    a[0].fill_between(k_all, xy_lims[0], xy_lims[1], where=(k_all > 1.2), color='r', alpha=0.15)
+    a[1].fill_between(k_all, delta_y_lims[0], delta_y_lims[1], where=(k_all > 1.2), color='r', alpha=0.15)
+    a[1].fill_between(k_all, -0.02, 0.02, where=(k_all < 1.2), color='k', alpha=0.05)
+    a[1].fill_between(k_all, -0.01, 0.01, where=(k_all < 1.2), color='k', alpha=0.1)
 
 
-    a[0].legend(loc=1, title='Test configuration')
-    ax2.legend(loc=3)
+
+    a[0].legend(loc='upper right', title='Test configuration')
+    ax2.legend(loc='upper left')
     a[1].set_xlabel('k[h/Mpc]')
     a[1].set_ylabel(r'$\delta B(k)/B(k)$')
     a[0].set_ylabel('B(k)')
