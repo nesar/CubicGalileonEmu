@@ -81,8 +81,8 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
         
         sepia_data = sepia_data_format(p_train_all, y_vals_all[:, z_index, :], y_ind_all)
 
-        print(sepia_data)
-        sepia_model_i = do_pca(sepia_data, exp_variance=0.95)
+        # print(sepia_data)
+        sepia_model_i = do_pca(sepia_data, exp_variance=0.999)
         
         model_filename = model_dir + 'multivariate_model_z_index' + str(z_index) 
         sepia_model_z = gp_load(sepia_model_i, model_filename)
@@ -109,7 +109,7 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
     print('Redshift: ' + str(z_all[z_index]))
 
     sepia_data_z = sepia_data_format(p_all_train, y_vals_train, k_all)
-    do_pca(sepia_data_z, exp_variance=0.95)
+    do_pca(sepia_data_z, exp_variance=0.999)
 
     return sepia_data_z
 

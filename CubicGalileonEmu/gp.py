@@ -63,7 +63,7 @@ def do_gp_train_multiple(model_dir:str=None, # Pickle directory path
         # print(sepia_data)
         model_filename = model_dir + 'multivariate_model_z_index' + str(z_index) 
 
-        sepia_model = do_pca(sepia_data, exp_variance=0.99)
+        sepia_model = do_pca(sepia_data, exp_variance=0.999)
         sepia_model = do_gp_train(sepia_model, model_filename)
         print('Training complete for snapshot ' + str(z_index))
         print('Model saved at ' + model_dir)
