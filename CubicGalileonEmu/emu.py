@@ -81,11 +81,13 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
         
         sepia_data = sepia_data_format(p_train_all, y_vals_all[:, z_index, :], y_ind_all)
 
+        print(p_train_all.shape, y_vals_all[:, z_index, :].shape, y_ind_all.shape)
+
         # print(sepia_data)
-        sepia_model_i = do_pca(sepia_data, exp_variance=0.999)
+        sepia_model_pca_i = do_pca(sepia_data, exp_variance=0.999)
         
         model_filename = model_dir + 'multivariate_model_z_index' + str(z_index) 
-        sepia_model_z = gp_load(sepia_model_i, model_filename)
+        sepia_model_z = gp_load(sepia_model_pca_i, model_filename)
         model_list.append(sepia_model_z)
         data_list.append(sepia_data)
 

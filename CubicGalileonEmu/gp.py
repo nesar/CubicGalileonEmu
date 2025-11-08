@@ -61,6 +61,9 @@ def do_gp_train_multiple(model_dir:str=None, # Pickle directory path
      
         sepia_data = sepia_data_format(p_train_all, y_vals_all[:, z_index, :], y_ind_all)
         # print(sepia_data)
+        
+        print(p_train_all.shape, y_vals_all[:, z_index, :].shape, y_ind_all.shape)
+
         model_filename = model_dir + 'multivariate_model_z_index' + str(z_index) 
 
         sepia_model = do_pca(sepia_data, exp_variance=0.999)
