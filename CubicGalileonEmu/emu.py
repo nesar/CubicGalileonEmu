@@ -17,16 +17,18 @@ from .load import sepia_data_format
 import sys
 import os
 
-# %% ../nbs/03_emu.ipynb 4
+# %% ../nbs/03_emu.ipynb 5
+import os, sys
+
 def blockPrint():
-    sys._jupyter_stdout = sys.stdout
+    sys._saved_stdout = sys.stdout
     sys.stdout = open(os.devnull, 'w')
 
 def enablePrint():
-    sys._jupyter_stdout = sys.stdout
-    sys.stdout = sys.__stdout__
+    sys.stdout.close()
+    sys.stdout = getattr(sys, "_saved_stdout", sys.__stdout__)
 
-# %% ../nbs/03_emu.ipynb 9
+# %% ../nbs/03_emu.ipynb 10
 def emulate(sepia_model: SepiaModel = None,  # Input model in SEPIA format
                  sepia_data: SepiaData = None,  # Input data in SEPIA format
                  input_params: np.array = None #Input parameter array 
@@ -63,13 +65,12 @@ def emulate(sepia_model: SepiaModel = None,  # Input model in SEPIA format
 
     return np.stack(means, axis=1), np.stack(stds, axis=1)
 
-# %% ../nbs/03_emu.ipynb 10
+# %% ../nbs/03_emu.ipynb 12
 def load_model_multiple(model_dir:str=None, # Pickle directory path
                         p_train_all:np.array=None, # Parameter array
                         y_vals_all:np.array=None, # Target y-values array
                         y_ind_all:np.array=None, # x-values
                         z_index_range:np.array=None, # Snapshot indices for training
-                        sepia_model_i:str=None,
                    ) -> None: 
     
     blockPrint()
@@ -80,9 +81,6 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
     for z_index in z_index_range:
         
         sepia_data = sepia_data_format(p_train_all, y_vals_all[:, z_index, :], y_ind_all)
-
-        # print(p_train_all.shape, y_vals_all[:, z_index, :].shape, y_ind_all.shape)
-        # print(sepia_data)
         
         sepia_model_pca_i = do_pca(sepia_data, exp_variance=0.999)
         
@@ -93,35 +91,12 @@ def load_model_multiple(model_dir:str=None, # Pickle directory path
 
     enablePrint()
 
-    print('Number of models loaded: ' + str(len(model_list))  )
-
-    
-    '''
-    # def sepia_data_by_redshift(redshift):
-    ## Data prep
-    Bk_all, k_all, z_all = load_boost_data()
-    p_all = load_params()
-    z_index = np.argmin(np.abs(z_all - redshift))
-    print('Redshift index: ' + str(z_index))
-
-    # Load validation data
-    train_indices = [i for i in  np.arange(49)] # if i not in test_indices]
-    p_all_train = p_all[train_indices]
-    y_vals_train = Bk_all[:, z_index, :][train_indices]
-    print('Redshift: ' + str(z_all[z_index]))
-
-    sepia_data_z = sepia_data_format(p_all_train, y_vals_train, k_all)
-    do_pca(sepia_data_z, exp_variance=0.999)
-
-    return sepia_data_z
-
-    '''
-
+    print('Number of models loaded: ' + str(len(model_list)) + ' from: ' + model_dir  )
 
     return model_list, data_list
  
 
-# %% ../nbs/03_emu.ipynb 12
+# %% ../nbs/03_emu.ipynb 14
 def emu_redshift(input_params_and_redshift:np.array=None, # Input parameters (along with redshift) 
                  sepia_model_list:list=None,
                  sepia_data_list:list=None,

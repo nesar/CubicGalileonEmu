@@ -17,7 +17,7 @@ def do_pca(sepia_data:SepiaData=None, # Input data in SEPIA format
     sepia_data.transform_xt()
     sepia_data.standardize_y()
     # Compute basis
-    sepia_data.create_K_basis(n_pc=exp_variance)        # Explain 95% of variance
+    sepia_data.create_K_basis(n_pc=exp_variance)        # Explain 99.9% of variance
     if do_discrepancy:
         sepia_data.create_D_basis()
     # Set up the model
