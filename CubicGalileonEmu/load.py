@@ -4,8 +4,9 @@
 
 # %% auto 0
 __all__ = ['DATA_DIR', 'LIBRARY_ZK_FILE', 'LIBRARY_BK_FILE', 'LIBRARY_BKLIN_FILE', 'LIBRARY_PARAM_FILE', 'PARAM_NAME',
-           'LIBRARY_ZK_FILE_VAL', 'LIBRARY_BK_FILE_VAL', 'LIBRARY_PARAM_FILE_VAL', 'smooth_func', 'load_boost_data',
-           'load_boost_data_lin', 'load_params', 'sepia_data_format']
+           'LIBRARY_ZK_FILE_VAL', 'LIBRARY_BK_FILE_VAL', 'LIBRARY_PARAM_FILE_VAL', 'LIBRARY_ZK_FILE_VAL_EDGES',
+           'LIBRARY_BK_FILE_VAL_EDGES', 'LIBRARY_PARAM_FILE_VAL_EDGES', 'smooth_func', 'load_boost_data',
+           'load_boost_data_lin', 'load_params', 'load_boost_data_edges', 'sepia_data_format']
 
 # %% ../nbs/00_load.ipynb 3
 import numpy as np
@@ -26,6 +27,10 @@ PARAM_NAME = [r"$\Omega_m$", r"$n_s$", r"$10^{9} A_s$", r"$h$", r"$f_\phi$"]
 LIBRARY_ZK_FILE_VAL = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "z_k_validation.txt").name
 LIBRARY_BK_FILE_VAL = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "Boost_validation.npy").name
 LIBRARY_PARAM_FILE_VAL = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "cosmo_validation.txt").name
+
+LIBRARY_ZK_FILE_VAL_EDGES = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "z_k_validation_edges.txt").name
+LIBRARY_BK_FILE_VAL_EDGES = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "Boost_validation_edges.npy").name
+LIBRARY_PARAM_FILE_VAL_EDGES = pkg_resources.resource_stream("CubicGalileonEmu", DATA_DIR + "cosmo_validation_edges.txt").name
 
 
 # %% ../nbs/00_load.ipynb 6
@@ -82,7 +87,30 @@ def load_params(p_fileIn:str=LIBRARY_PARAM_FILE, # Input file for parameters
     p_all[:, 2] = p_all[:, 2]/1e-9  # A_s rescaling
     return p_all
 
-# %% ../nbs/00_load.ipynb 16
+# %% ../nbs/00_load.ipynb 10
+def load_boost_data_edges(Bk_fileIn:str=LIBRARY_BK_FILE_VAL_EDGES, # Input file for edge validation Boost
+                          Zk_fileIn:str=LIBRARY_ZK_FILE_VAL_EDGES, # Input file for edge validation z and k
+                         ) -> tuple: # Boost, Smoothed Boost, wavenumbers, redshifts
+    """Load edge validation boost data, handling potentially incomplete files gracefully."""
+    zk_all = np.loadtxt(Zk_fileIn)
+    z_all = zk_all[:, 0][np.isfinite(zk_all[:, 0])]
+    k_all = zk_all[:, 1]
+    n_z = len(z_all)
+    n_k = len(k_all)
+
+    with open(Bk_fileIn, "rb") as f:
+        np.lib.format.read_magic(f)
+        np.lib.format.read_array_header_1_0(f)
+        raw = np.frombuffer(f.read(), dtype=np.float64)
+
+    n_complete = int(raw.shape[0] // (n_z * n_k))
+    Bk_all = raw[:n_complete * n_z * n_k].reshape(n_complete, n_z, n_k)
+    Bk_all_smooth = smooth_func(Bk_all)
+
+    return Bk_all, Bk_all_smooth, k_all, z_all
+
+
+# %% ../nbs/00_load.ipynb 17
 def sepia_data_format(design:np.array=None, # Params array of shape (num_simulation, num_params)
                      y_vals:np.array=None, # Shape (num_simulation, num_y_values)
                      y_ind:np.array=None # Shape (num_y_values,)
