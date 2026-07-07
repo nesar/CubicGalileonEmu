@@ -12,6 +12,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      # execnb 0.2.x removed execnb.nbio, which nbdev<3 still imports. Pin it
+      # (the fastai action runs `pip install -U 'nbdev<3'` internally; pip honors
+      # PIP_CONSTRAINT even there). See ci-constraints.txt.
+      PIP_CONSTRAINT: ${{ github.workspace }}/ci-constraints.txt
     steps:
     - name: Checkout code
       uses: actions/checkout@v5

@@ -1,0 +1,5 @@
+# pip constraints applied in CI via PIP_CONSTRAINT (see .github/workflows/).
+# execnb 0.2.x dropped the `execnb.nbio` module, which nbdev<3 (2.4.14) still
+# imports, breaking `nbdev_clean`/`nbdev_docs`. Pin execnb to the last 0.1.x
+# until the fastai nbdev toolchain resolves the incompatibility upstream.
+execnb<0.2
