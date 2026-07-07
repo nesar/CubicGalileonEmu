@@ -14,6 +14,8 @@ jobs:
 
     - name: Use nbdev-ci action
       uses: fastai/workflows/nbdev-ci@master
+      with:
+        version: '3.11'  # scipy<=1.10.1 (pinned in settings.ini) has no wheels for Python 3.12
 
     - name: Install SEPIA
       run: |

@@ -24,3 +24,5 @@ jobs:
 
     - name: Use quarto-ghp action
       uses: fastai/workflows/quarto-ghp@master
+      with:
+        version: '3.11'  # scipy<=1.10.1 (pinned in settings.ini) has no wheels for Python 3.12
